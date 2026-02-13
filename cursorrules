@@ -1,0 +1,46 @@
+# Project: ManyChat-style Prototype
+# Stack: React 18 + TypeScript + Ant Design 5 + Styled Components + Vite
+
+## Design System Rules
+- Use Ant Design components as the base layer
+- Use Styled Components to extend/customize Ant components
+- Never use inline styles
+- Never use plain CSS files
+- Wrap Ant components with styled() when customizing
+
+## Theme
+- Primary color: #0084FF (ManyChat blue)
+- Secondary color: #7B61FF (purple accent)
+- Sidebar background: #1B2559 (dark navy)
+- Sidebar active: rgba(255,255,255,0.1)
+- Success: #22C55E
+- Warning: #F59E0B
+- Error: #EF4444
+- Border radius: 8px default, 12px for cards
+- Font: Inter, -apple-system, sans-serif
+
+## Component Conventions
+- One component per file
+- Named exports only
+- Styled components defined above the main component in the same file
+- Props interface defined above the component
+- File name matches component name: StatCard.tsx → export const StatCard
+
+## Responsive Breakpoints
+- Mobile: max-width 768px
+- Tablet: max-width 1024px
+- Desktop: min-width 1025px
+- Sidebar collapses to bottom nav on mobile
+
+## File Structure
+- components/layout/ → AppShell, Sidebar, TopBar, MobileNav
+- components/dashboard/ → Dashboard screen components
+- components/shared/ → Reusable across screens
+- styles/ → theme.ts, globalStyles.ts, mixins.ts
+- data/mock/ → Mock data files
+
+## Code Style
+- Functional components only
+- Use React.FC sparingly — prefer typed props
+- Destructure props in function signature
+- Keep components under 150 lines — split if larger
