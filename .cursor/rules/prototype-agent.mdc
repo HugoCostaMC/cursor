@@ -1,0 +1,23 @@
+---
+description: Prototype-first implementation rules
+globs:
+  - "**/*"
+alwaysApply: false
+---
+
+# Prototype Agent Rules
+
+## Scope
+- Prefer the simplest end-to-end implementation first
+- Keep features small and iterative
+- Avoid speculative abstractions
+
+## Safety
+- Never commit secrets or tokens
+- Use `.env.local` for local secrets
+- Keep `.env.example` updated with placeholder keys
+
+## Delivery
+- Make focused changes for one feature at a time
+- Add short docs updates when behavior changes
+- Keep commit messages descriptive

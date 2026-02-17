@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+
+# Cursor/editor
+.cursor/session.json
+.cursor/state.json
+
+# OS noise
+.DS_Store
