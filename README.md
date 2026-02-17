@@ -79,6 +79,7 @@ Full guide:
 This repository now includes a Vite + React + TypeScript prototype app with direct token wiring:
 
 - External token source file: `design-system/tokens.json`
+- External token adapter: `src/theme/adapters/externalTokenAdapter.ts`
 - Ant Design mapping: `src/theme/theme.ts` (`antdThemeConfig`)
 - Styled-components theme: `src/theme/theme.ts` (`styledTheme`)
 

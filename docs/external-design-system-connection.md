@@ -47,6 +47,7 @@ Use this after design updates in the external system.
 This repository is already wired:
 
 - Source tokens: `design-system/tokens.json`
+- External schema adapter: `src/theme/adapters/externalTokenAdapter.ts`
 - Mapping + merge/fallback logic: `src/theme/theme.ts`
 - Default fallback values: `src/theme/defaultTokens.ts`
 - Global CSS using theme: `src/theme/globalStyles.ts`
@@ -61,7 +62,38 @@ npm run dev
 Open:
 
 - `/` for a quick token preview
-- `/tokens` for full color token swatches
+- `/tokens` for color, spacing, typography, and shadow previews
+
+## 5) Supported token domains
+
+The adapter currently maps these token domains:
+
+- `colors`
+- `spacing`
+- `borderRadius`
+- `typography`
+- `shadows`
+
+If a value is missing in your external source, fallback defaults are applied from
+`src/theme/defaultTokens.ts`.
+
+## 6) Supported external token shapes
+
+The adapter accepts multiple common JSON shapes:
+
+1. **Canonical shape**
+   - `colors.primary`
+   - `spacing.md`
+   - `typography.fontSizeBase`
+2. **Nested design-token shape**
+   - `tokens.colors.primary`
+   - `tokens.spacing.md`
+3. **Style Dictionary / W3C token shape**
+   - `color.primary.value`
+   - `typography.body.value.fontSize`
+   - `shadows.md.$value`
+
+See `docs/token-schema-examples.md` for concrete examples.
 
 ## Troubleshooting
 
