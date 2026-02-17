@@ -61,6 +61,36 @@ fi
 
 if [ -f ".env.local" ]; then
   pass ".env.local exists"
+  set -a
+  # shellcheck disable=SC1091
+  . ".env.local"
+  set +a
+
+  DS_MODE="${DESIGN_SYSTEM_MODE:-}"
+  if [ -z "${DS_MODE}" ]; then
+    warn "DESIGN_SYSTEM_MODE not set in .env.local"
+  else
+    pass "design system mode: ${DS_MODE}"
+    case "${DS_MODE}" in
+      package)
+        if [ -n "${DESIGN_SYSTEM_PACKAGE_NAME:-}" ]; then
+          pass "DESIGN_SYSTEM_PACKAGE_NAME is set"
+        else
+          warn "DESIGN_SYSTEM_PACKAGE_NAME missing for package mode"
+        fi
+        ;;
+      tokens_api)
+        if [ -n "${DESIGN_SYSTEM_TOKENS_URL:-}" ]; then
+          pass "DESIGN_SYSTEM_TOKENS_URL is set"
+        else
+          warn "DESIGN_SYSTEM_TOKENS_URL missing for tokens_api mode"
+        fi
+        ;;
+      *)
+        warn "Unsupported DESIGN_SYSTEM_MODE value: ${DS_MODE}"
+        ;;
+    esac
+  fi
 else
   warn ".env.local missing (copy from .env.example)"
 fi

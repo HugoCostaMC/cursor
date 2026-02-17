@@ -1,0 +1,13 @@
+---
+description: External design system integration rules
+globs:
+  - "**/*"
+alwaysApply: false
+---
+
+# External Design System Rules
+
+- Prefer consuming shared tokens/components from the external design system before adding local variants.
+- Keep token mapping centralized in one theme source file when app code exists.
+- If a required token is missing, add a temporary fallback and document it.
+- Do not hardcode colors/spacing values that already exist in external tokens.

@@ -54,3 +54,22 @@ Use the prompt template in `AGENT_PROMPT_TEMPLATE.md`, then iterate in small chu
 ```bash
 cp .env.example .env.local
 ```
+
+## 6) Connect an external design system for prototypes
+
+This repo includes scripts for two integration modes:
+
+- **package mode**: install a shared design-system package
+- **tokens_api mode**: sync design tokens from an external endpoint
+
+Quick start:
+
+```bash
+cp .env.example .env.local
+chmod +x scripts/connect-design-system.sh scripts/sync-design-tokens.sh
+./scripts/connect-design-system.sh
+```
+
+Full guide:
+
+- `docs/external-design-system-connection.md`
