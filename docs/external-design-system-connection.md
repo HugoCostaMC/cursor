@@ -44,21 +44,24 @@ Use this after design updates in the external system.
 
 ## 4) Use tokens in a React + Ant Design prototype
 
-Example mapping pattern (adapt field names to your token structure):
+This repository is already wired:
 
-```ts
-import tokens from "../design-system/tokens.json";
+- Source tokens: `design-system/tokens.json`
+- Mapping + merge/fallback logic: `src/theme/theme.ts`
+- Default fallback values: `src/theme/defaultTokens.ts`
+- Global CSS using theme: `src/theme/globalStyles.ts`
+- App entrypoint providers: `src/main.tsx`
 
-export const appTheme = {
-  token: {
-    colorPrimary: tokens.colors.primary,
-    borderRadius: Number(tokens.borderRadius.md),
-    colorText: tokens.colors.text,
-  },
-};
+After syncing tokens, run:
+
+```bash
+npm run dev
 ```
 
-Then apply with Ant Design `ConfigProvider`, and pass the same source values into your styled-components theme.
+Open:
+
+- `/` for a quick token preview
+- `/tokens` for full color token swatches
 
 ## Troubleshooting
 

@@ -73,3 +73,24 @@ chmod +x scripts/connect-design-system.sh scripts/sync-design-tokens.sh
 Full guide:
 
 - `docs/external-design-system-connection.md`
+
+## 7) Run the wired prototype app
+
+This repository now includes a Vite + React + TypeScript prototype app with direct token wiring:
+
+- External token source file: `design-system/tokens.json`
+- Ant Design mapping: `src/theme/theme.ts` (`antdThemeConfig`)
+- Styled-components theme: `src/theme/theme.ts` (`styledTheme`)
+
+Commands:
+
+```bash
+npm install
+npm run dev
+```
+
+Refresh tokens from your external system:
+
+```bash
+npm run sync:design-tokens
+```

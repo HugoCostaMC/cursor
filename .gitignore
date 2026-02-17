@@ -2,6 +2,11 @@
 .env.*
 !.env.example
 
+# Node / build
+node_modules
+dist
+coverage
+
 # Cursor/editor
 .cursor/session.json
 .cursor/state.json
