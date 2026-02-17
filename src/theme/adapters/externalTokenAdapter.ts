@@ -7,6 +7,10 @@ import type {
   TypographyTokens,
 } from "../defaultTokens";
 
+export type AdaptedDesignTokens = {
+  [K in keyof DesignTokens]?: Partial<DesignTokens[K]>;
+};
+
 type TokenPathMap<T extends object> = {
   [K in keyof T]-?: readonly string[];
 };
@@ -390,7 +394,7 @@ const compactObject = <T extends object>(
 
 const hasValues = (input: object): boolean => Object.keys(input).length > 0;
 
-export const adaptExternalTokens = (source: unknown): Partial<DesignTokens> => {
+export const adaptExternalTokens = (source: unknown): AdaptedDesignTokens => {
   const colors = compactObject<ColorTokens>({
     primary: pickToken(source, colorPaths.primary, asString),
     primaryHover: pickToken(source, colorPaths.primaryHover, asString),
