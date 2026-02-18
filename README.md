@@ -73,6 +73,7 @@ chmod +x scripts/connect-design-system.sh scripts/sync-design-tokens.sh
 Full guide:
 
 - `docs/external-design-system-connection.md`
+- `docs/onboarding-flow-for-creators.md`
 
 ## 7) Run the wired prototype app
 
@@ -89,6 +90,12 @@ Commands:
 npm install
 npm run dev
 ```
+
+Prototype routes:
+
+- `/` — home overview
+- `/onboarding` — conversational creator onboarding flow (JTBD-based)
+- `/tokens` — token previews
 
 Refresh tokens from your external system:
 

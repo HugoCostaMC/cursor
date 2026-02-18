@@ -1,6 +1,7 @@
 import { Button, Card, Col, Layout, Menu, Row, Space, Tag, Typography } from "antd";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import styled, { useTheme } from "styled-components";
+import OnboardingFlow from "./features/onboarding/OnboardingFlow";
 
 const { Header, Content } = Layout;
 
@@ -83,6 +84,9 @@ const HomePage = () => {
         <Space>
           <Button type="primary">Primary action</Button>
           <Button>Secondary action</Button>
+          <Button type="dashed">
+            <Link to="/onboarding">Open onboarding prototype</Link>
+          </Button>
         </Space>
       </Card>
 
@@ -195,6 +199,11 @@ const TokensPage = () => {
 
 const App = () => {
   const location = useLocation();
+  const selectedNavKey = location.pathname.startsWith("/onboarding")
+    ? "/onboarding"
+    : location.pathname.startsWith("/tokens")
+      ? "/tokens"
+      : "/";
 
   return (
     <SAppLayout>
@@ -203,9 +212,10 @@ const App = () => {
         <Menu
           mode="horizontal"
           theme="dark"
-          selectedKeys={[location.pathname]}
+          selectedKeys={[selectedNavKey]}
           items={[
             { key: "/", label: <Link to="/">Home</Link> },
+            { key: "/onboarding", label: <Link to="/onboarding">Onboarding</Link> },
             { key: "/tokens", label: <Link to="/tokens">Tokens</Link> },
           ]}
           style={{ flex: 1, minWidth: 240, justifyContent: "flex-end" }}
@@ -214,6 +224,7 @@ const App = () => {
       <SContent>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/onboarding" element={<OnboardingFlow />} />
           <Route path="/tokens" element={<TokensPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
