@@ -1,7 +1,8 @@
-# Onboarding Flow for Creators (Mobile + shadcn Prototype)
+# Onboarding Flow for Creators (Chat UI + shadcn Prototype)
 
-This prototype now uses a 4-screen mobile onboarding layout inspired by the provided reference
-image and implemented with **shadcn/ui** components.
+This prototype is now transformed into a **chat-first mobile onboarding experience**, while still
+using the provided image as composition inspiration (mobile framing, warm top visual area, rounded
+content container).
 
 ## Location
 
@@ -10,32 +11,33 @@ image and implemented with **shadcn/ui** components.
 - Mobile app shell: `src/App.tsx`
 - Design system components: `src/components/ui/*`
 
-## Implemented mobile screens
+## Implemented chat flow
 
-1. **Goal selection**
-   - Prompt: "What's your top onboarding goal?"
-   - Rounded option list with one active choice
-   - Continue button disabled until selection
-
-2. **Goal confirmation**
-   - Same list layout with selected state emphasized
-   - Continue advances to setup preview
-
-3. **Skill bundle preview**
-   - Three starter skills shown as shadcn cards
-   - Back + Continue action row
-
-4. **Trial / paywall screen**
-   - Two plan cards (annual/monthly)
-   - Primary CTA: Start free trial
-   - Inline success state after CTA
+1. **Agent greeting**
+   - Personalized intro message
+   - Asks for top onboarding goal
+2. **Quick-reply goal selection**
+   - One-tap options for core jobs
+3. **Tone selection**
+   - One-tap tone choices
+4. **Offer capture (text input)**
+   - User types core offer in composer
+5. **Skill 1 approval**
+   - Agent proposes first DM copy
+   - User can accept or edit
+6. **Skill 2 decision**
+   - User chooses yes/not yet
+7. **Trial prompt and activation**
+   - Start free trial quick action
+   - Final success confirmation in chat
 
 ## Visual and system decisions
 
 - Mobile-only viewport and phone frame presentation
-- shadcn/ui components (Button, Card, Badge, Progress, Separator)
+- shadcn/ui components (Button, Badge, Progress, Input)
 - Manychat branding (logo, typography, color tokens)
-- Abstract top illustration and rounded bottom sheet per reference composition
+- Light mode baseline with stronger text contrast for accessibility
+- Quick-reply chips + bottom composer to mimic real chat UX
 
 ## Notes
 

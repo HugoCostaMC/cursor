@@ -81,10 +81,10 @@ Full guide:
 
 This repository now includes a Vite + React + TypeScript **mobile-first** prototype app with:
 
-- Layout inspired by the 4-screen mobile onboarding reference image
+- Chat-first onboarding flow transformed from the provided mobile reference
 - **shadcn/ui** component system (`src/components/ui/*`)
 - Manychat-branded logo, typography, and color tokens
-- Conversational onboarding flow adapted for mobile cards/sheets
+- Accessibility-focused light mode and high text contrast
 
 Commands:
 
