@@ -74,6 +74,7 @@ Full guide:
 
 - `docs/external-design-system-connection.md`
 - `docs/onboarding-flow-for-creators.md`
+- `docs/deploy-github-pages.md`
 
 ## 7) Run the wired prototype app
 
@@ -102,3 +103,30 @@ Refresh tokens from your external system:
 ```bash
 npm run sync:design-tokens
 ```
+
+## 8) Share the prototype with GitHub Pages
+
+A GitHub Actions workflow is included at:
+
+- `.github/workflows/deploy-pages.yml`
+
+It builds and deploys the app to GitHub Pages on push.
+
+### One-time GitHub setting
+
+In your GitHub repo:
+
+1. Go to **Settings -> Pages**
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**
+
+### Expected URL
+
+For this repository (`HugoCostaMC/cursor`), the Pages URL is:
+
+- `https://hugocostamc.github.io/cursor/`
+
+Since the production router uses hash routing for reliability on Pages:
+
+- Home: `https://hugocostamc.github.io/cursor/#/`
+- Onboarding: `https://hugocostamc.github.io/cursor/#/onboarding`
+- Tokens: `https://hugocostamc.github.io/cursor/#/tokens`
