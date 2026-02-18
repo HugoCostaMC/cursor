@@ -1,690 +1,314 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { Check, Circle, Sparkles, X } from "lucide-react";
+import manychatLogo from "@/assets/brand/manychat-logo.png";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  Alert,
-  Button,
   Card,
-  Col,
-  Descriptions,
-  Divider,
-  Input,
-  Progress,
-  Radio,
-  Row,
-  Space,
-  Statistic,
-  Tag,
-  Typography,
-} from "antd";
-import styled from "styled-components";
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
-type FlowStep =
-  | "connect"
-  | "indexing"
-  | "greeting"
-  | "goals"
-  | "tone"
-  | "offer"
-  | "skillOne"
-  | "skillTwo"
-  | "goLive";
+type Step = 0 | 1 | 2 | 3;
+type Plan = "annual" | "monthly";
 
-type ToneId = "warm" | "direct" | "playful" | "professional";
-
-interface GoalOption {
+interface Goal {
   id: string;
-  icon: string;
   label: string;
   description: string;
-  monetizationRelated: boolean;
 }
 
-const GOAL_OPTIONS: GoalOption[] = [
+const GOALS: Goal[] = [
   {
     id: "reply",
-    icon: "🗣️",
     label: "Reply to followers I'm missing",
-    description: "Handle unanswered DMs and story replies quickly.",
-    monetizationRelated: false,
+    description: "Catch conversations that currently go unanswered.",
   },
   {
     id: "sell",
-    icon: "💰",
     label: "Sell more of my course / product",
-    description: "Qualify buyers and send the right links automatically.",
-    monetizationRelated: true,
+    description: "Turn DMs into leads and buyers.",
   },
   {
     id: "email",
-    icon: "📧",
     label: "Grow my email list",
-    description: "Capture leads naturally while chatting in DMs.",
-    monetizationRelated: true,
+    description: "Capture contact info naturally in chat.",
   },
   {
     id: "faq",
-    icon: "🤝",
-    label: "Answer the same questions I get every day",
-    description: "Use indexed content to answer common audience questions.",
-    monetizationRelated: false,
+    label: "Answer repetitive questions faster",
+    description: "Handle common asks with your voice and style.",
   },
 ];
 
-const TONE_OPTIONS: Array<{ id: ToneId; label: string; helper: string }> = [
+const SKILLS = [
   {
-    id: "warm",
-    label: "Warm & friendly 😊",
-    helper: "Supportive and conversational.",
+    title: "Life-long skills",
+    description: "Auto-reply to FAQs using your Instagram and product context.",
   },
   {
-    id: "direct",
-    label: "Straight to the point 💪",
-    helper: "Concise and action-focused.",
+    title: "Lead capture moments",
+    description: "Collect email intent without pushing followers away.",
   },
   {
-    id: "playful",
-    label: "Fun & playful 🎉",
-    helper: "Energetic with personality.",
-  },
-  {
-    id: "professional",
-    label: "Professional & polished ✨",
-    helper: "Clear, expert, and confident.",
+    title: "Conversion nudges",
+    description: "Send the right offer links when purchase intent appears.",
   },
 ];
 
-const TONE_LABELS: Record<ToneId, string> = {
-  warm: "Warm & friendly",
-  direct: "Straight to the point",
-  playful: "Fun & playful",
-  professional: "Professional & polished",
-};
+const Illustration = ({ step }: { step: Step }) => {
+  const palette =
+    step === 0
+      ? "from-[#FFBF00] to-[#F7A600]"
+      : step === 3
+        ? "from-[#FFE067] to-[#F9C73E]"
+        : "from-[#FF8C1A] to-[#FF7B15]";
 
-const SContainer = styled.div`
-  width: 100%;
-`;
-
-const SFlowFrame = styled.div`
-  width: 100%;
-`;
-
-const SAgentBubble = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: ${({ theme }) => theme.spacing.md};
-`;
-
-const SOptionGrid = styled.div`
-  display: grid;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const SGoalOption = styled.button<{ $selected: boolean }>`
-  width: 100%;
-  text-align: left;
-  border: 1px solid
-    ${({ theme, $selected }) => ($selected ? theme.colors.primary : theme.colors.border)};
-  background: ${({ theme, $selected }) => ($selected ? `${theme.colors.primary}10` : theme.colors.surface)};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: ${({ theme }) => theme.spacing.md};
-  cursor: pointer;
-  transition: border-color 0.15s ease;
-`;
-
-const SMessagePreview = styled.div`
-  border: 1px dashed ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.background};
-  color: ${({ theme }) => theme.colors.text};
-  white-space: pre-line;
-`;
-
-const SStepMeta = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const getGoalsLabel = (selectedIds: string[]): string => {
-  const selected = GOAL_OPTIONS.filter((goal) => selectedIds.includes(goal.id)).map(
-    (goal) => goal.label,
+  return (
+    <div className={cn("relative h-60 w-full overflow-hidden bg-gradient-to-b", palette)}>
+      <div className="absolute -left-16 top-6 h-36 w-36 rounded-full border-[16px] border-orange-200/60" />
+      <div className="absolute -right-14 top-2 h-40 w-40 rounded-full border-[16px] border-orange-200/60" />
+      <div className="absolute left-1/2 top-14 flex h-[5.5rem] w-[5.5rem] -translate-x-1/2 items-center justify-center rounded-full bg-yellow-300 shadow-inner">
+        <div className="flex items-center gap-2">
+          <span className="block h-1.5 w-1.5 rounded-full bg-orange-900/70" />
+          <span className="block h-1.5 w-1.5 rounded-full bg-orange-900/70" />
+        </div>
+        <span className="absolute top-11 h-2 w-8 rounded-full border-t-2 border-orange-900/70" />
+      </div>
+      <div className="absolute -bottom-7 left-1/2 h-20 w-[120%] -translate-x-1/2 rounded-[50%] bg-card" />
+    </div>
   );
-  return selected.length > 0 ? selected.join(", ") : "Not selected";
 };
 
 const OnboardingFlow = () => {
-  const [step, setStep] = useState<FlowStep>("connect");
-  const [indexingProgress, setIndexingProgress] = useState(0);
-  const [contextAccuracy, setContextAccuracy] = useState<"yes" | "tweak" | null>(null);
-  const [contextCorrection, setContextCorrection] = useState("");
-  const [goals, setGoals] = useState<string[]>([]);
-  const [tone, setTone] = useState<ToneId>("warm");
-  const [offer, setOffer] = useState("Online course / coaching program");
-  const [leadMagnet, setLeadMagnet] = useState("free guide");
-  const [skillOneCustomMessage, setSkillOneCustomMessage] = useState<string | null>(null);
-  const [skillOneDraft, setSkillOneDraft] = useState("");
-  const [editingSkillOne, setEditingSkillOne] = useState(false);
-  const [skillOneConfigured, setSkillOneConfigured] = useState<"default" | "custom" | null>(null);
-  const [skillTwoEnabled, setSkillTwoEnabled] = useState<boolean | null>(null);
+  const [step, setStep] = useState<Step>(0);
+  const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<Plan>("annual");
+  const [startedTrial, setStartedTrial] = useState(false);
 
-  const creatorName = "Anna";
-  const creatorNiche = "Cake decorating / baking education";
-
-  const monetizationPath = useMemo(
-    () =>
-      GOAL_OPTIONS.some(
-        (goal) => goal.monetizationRelated && goals.some((selectedGoal) => selectedGoal === goal.id),
-      ),
-    [goals],
+  const progressValue = ((step + 1) / 4) * 100;
+  const activeGoal = useMemo(
+    () => GOALS.find((goal) => goal.id === selectedGoal) ?? null,
+    [selectedGoal],
   );
 
-  useEffect(() => {
-    if (step !== "indexing") {
+  const continueFromGoal = () => {
+    if (!selectedGoal) {
       return;
     }
-
-    setIndexingProgress(0);
-    let timeoutId: number | undefined;
-
-    const intervalId = window.setInterval(() => {
-      setIndexingProgress((previous) => {
-        const next = Math.min(previous + 12, 100);
-
-        if (next >= 100) {
-          window.clearInterval(intervalId);
-          timeoutId = window.setTimeout(() => {
-            setStep("greeting");
-          }, 350);
-        }
-
-        return next;
-      });
-    }, 450);
-
-    return () => {
-      window.clearInterval(intervalId);
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, [step]);
-
-  const stepLabels = monetizationPath
-    ? ["Connect", "Index", "Context", "Goals", "Tone", "Offer", "Skills", "Go live"]
-    : ["Connect", "Index", "Context", "Goals", "Tone", "Skills", "Go live"];
-
-  const currentStepIndex = useMemo(() => {
-    if (monetizationPath) {
-      switch (step) {
-        case "connect":
-          return 0;
-        case "indexing":
-          return 1;
-        case "greeting":
-          return 2;
-        case "goals":
-          return 3;
-        case "tone":
-          return 4;
-        case "offer":
-          return 5;
-        case "skillOne":
-        case "skillTwo":
-          return 6;
-        case "goLive":
-          return 7;
-        default:
-          return 0;
-      }
-    }
-
-    switch (step) {
-      case "connect":
-        return 0;
-      case "indexing":
-        return 1;
-      case "greeting":
-        return 2;
-      case "goals":
-        return 3;
-      case "tone":
-        return 4;
-      case "skillOne":
-      case "skillTwo":
-        return 5;
-      case "goLive":
-        return 6;
-      case "offer":
-        return 4;
-      default:
-        return 0;
-    }
-  }, [monetizationPath, step]);
-
-  const flowProgress = Math.round(((currentStepIndex + 1) / stepLabels.length) * 100);
-
-  const skillOneDefaultMessage = monetizationPath
-    ? `Hey there 👋 Thanks for following!\nI’d love to share my ${leadMagnet} and point you to the ${offer}. Want me to send it?`
-    : `Hey there 👋 Thanks for following!\nI can help with common questions and point you to the best post when you need details.`;
-
-  const skillOnePreviewMessage = skillOneCustomMessage ?? skillOneDefaultMessage;
-
-  const skillTwoPrompt = monetizationPath
-    ? "One more — you get comments asking about your offer. Want me to DM details automatically when someone shows intent?"
-    : "One more — want me to auto-reply to story mentions so no engagement goes cold?";
-
-  const skillTwoName = monetizationPath
-    ? "Comment-to-DM with product details"
-    : "Story mention auto-reply";
-
-  const activeSkills = [
-    monetizationPath
-      ? "Follow-to-DM welcome + lead magnet"
-      : "Follow-to-DM welcome + FAQ starter",
-    ...(skillTwoEnabled ? [skillTwoName] : []),
-  ];
-
-  const resetFlow = () => {
-    setStep("connect");
-    setIndexingProgress(0);
-    setContextAccuracy(null);
-    setContextCorrection("");
-    setGoals([]);
-    setTone("warm");
-    setOffer("Online course / coaching program");
-    setLeadMagnet("free guide");
-    setSkillOneCustomMessage(null);
-    setSkillOneDraft("");
-    setEditingSkillOne(false);
-    setSkillOneConfigured(null);
-    setSkillTwoEnabled(null);
-  };
-
-  const toggleGoal = (goalId: string) => {
-    setGoals((previous) =>
-      previous.includes(goalId)
-        ? previous.filter((item) => item !== goalId)
-        : [...previous, goalId],
-    );
-  };
-
-  const proceedFromTone = () => {
-    if (monetizationPath) {
-      setStep("offer");
-      return;
-    }
-    setStep("skillOne");
-  };
-
-  const handleSkillOneLooksGood = () => {
-    setSkillOneConfigured("default");
-    setEditingSkillOne(false);
-    setStep("skillTwo");
-  };
-
-  const handleSkillOneEditStart = () => {
-    setSkillOneDraft(skillOnePreviewMessage);
-    setEditingSkillOne(true);
-  };
-
-  const handleSkillOneEditSave = () => {
-    if (skillOneDraft.trim().length === 0) {
-      return;
-    }
-    setSkillOneCustomMessage(skillOneDraft.trim());
-    setSkillOneConfigured("custom");
-    setEditingSkillOne(false);
-    setStep("skillTwo");
+    setStep((previous) => (previous === 0 ? 1 : 2));
   };
 
   return (
-    <SContainer>
-      <SFlowFrame>
-        <Space direction="vertical" size="large" style={{ width: "100%" }}>
-          <Card size="small">
-            <Space direction="vertical" size="small" style={{ width: "100%" }}>
-              <SStepMeta>
-                <Typography.Text strong>
-                  Step {currentStepIndex + 1} of {stepLabels.length}
-                </Typography.Text>
-                <Tag color="processing">{stepLabels[currentStepIndex]}</Tag>
-              </SStepMeta>
-              <Progress percent={flowProgress} showInfo={false} />
-            </Space>
-          </Card>
+    <div className="flex min-h-[760px] flex-col overflow-hidden rounded-[1.8rem] bg-card">
+      <div className="relative">
+        <Illustration step={step} />
+        <div className="absolute left-4 right-4 top-4 flex items-center justify-between">
+          <img src={manychatLogo} alt="Manychat" className="h-6 w-auto" />
+          <Badge variant="secondary" className="bg-white/85 text-slate-700">
+            Mobile onboarding
+          </Badge>
+        </div>
+      </div>
 
-          <Card title="Mobile-first conversational onboarding">
-            <Space direction="vertical" size="large" style={{ width: "100%" }}>
-              {step === "connect" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 8 }}>
-                      Connect Instagram and Manychat will build your creator profile automatically
-                      from your content, bio, and audience signals.
-                    </Typography.Paragraph>
-                    <Typography.Text type="secondary">
-                      No forms, no setup wizard — just a quick connection.
-                    </Typography.Text>
-                  </SAgentBubble>
+      <div className="-mt-5 flex flex-1 flex-col rounded-t-[1.8rem] bg-card px-5 pb-5 pt-4">
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Step {step + 1} of 4
+          </p>
+          <p className="text-xs text-muted-foreground">~2 min setup</p>
+        </div>
+        <Progress value={progressValue} className="mb-5 h-1.5 bg-slate-200" />
 
-                  <Button type="primary" size="large" onClick={() => setStep("indexing")}>
-                    Connect Instagram
-                  </Button>
-                </>
-              )}
+        {(step === 0 || step === 1) && (
+          <div className="flex flex-1 flex-col">
+            <h2 className="text-[1.65rem] font-semibold leading-tight text-slate-800">
+              {step === 0 ? "What's your top onboarding goal?" : activeGoal?.label ?? "Your goal"}
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Choose one option for now. You can add more skills right after activation.
+            </p>
 
-              {step === "indexing" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 8 }}>
-                      Getting to know your Instagram…
-                    </Typography.Paragraph>
-                    <Typography.Text type="secondary">
-                      Indexing profile, posts, bio links, and recent engagement patterns.
-                    </Typography.Text>
-                  </SAgentBubble>
-
-                  <Progress percent={indexingProgress} status="active" />
-                </>
-              )}
-
-              {step === "greeting" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 8 }}>
-                      Hey {creatorName}! 👋 I checked out your Instagram — love your {creatorNiche}{" "}
-                      content. Looks like you teach your craft and sell programs. Am I close?
-                    </Typography.Paragraph>
-                    <Typography.Paragraph style={{ marginBottom: 0 }}>
-                      Based on your replies, your vibe feels warm and encouraging. Is that accurate?
-                    </Typography.Paragraph>
-                  </SAgentBubble>
-
-                  <Space>
-                    <Button type="primary" onClick={() => setStep("goals")}>
-                      Yep
-                    </Button>
-                    <Button onClick={() => setContextAccuracy("tweak")}>Close (tweak it)</Button>
-                  </Space>
-
-                  {contextAccuracy === "tweak" && (
-                    <Space direction="vertical" style={{ width: "100%" }}>
-                      <Input.TextArea
-                        rows={3}
-                        placeholder="Tell me a bit more about what you do..."
-                        value={contextCorrection}
-                        onChange={(event) => setContextCorrection(event.target.value)}
-                      />
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          setContextAccuracy("tweak");
-                          setStep("goals");
-                        }}
-                      >
-                        Continue
-                      </Button>
-                    </Space>
-                  )}
-                </>
-              )}
-
-              {step === "goals" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 0 }}>
-                      So what&apos;s the main thing you&apos;d love help with right now?
-                    </Typography.Paragraph>
-                  </SAgentBubble>
-
-                  <SOptionGrid>
-                    {GOAL_OPTIONS.map((goal) => {
-                      const selected = goals.includes(goal.id);
-                      return (
-                        <SGoalOption
-                          key={goal.id}
-                          $selected={selected}
-                          onClick={() => toggleGoal(goal.id)}
-                          type="button"
-                        >
-                          <Typography.Text strong>
-                            {goal.icon} {goal.label}
-                          </Typography.Text>
-                          <br />
-                          <Typography.Text type="secondary">{goal.description}</Typography.Text>
-                        </SGoalOption>
-                      );
-                    })}
-                  </SOptionGrid>
-
-                  <Button
-                    type="primary"
-                    disabled={goals.length === 0}
-                    onClick={() => setStep("tone")}
+            <div className="mt-6 space-y-2.5">
+              {GOALS.map((goal) => {
+                const selected = selectedGoal === goal.id;
+                return (
+                  <button
+                    key={goal.id}
+                    type="button"
+                    onClick={() => setSelectedGoal(goal.id)}
+                    className={cn(
+                      "w-full rounded-full border px-4 py-3 text-left transition",
+                      selected
+                        ? "border-slate-800 bg-slate-800 text-white"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100",
+                    )}
                   >
-                    Continue
-                  </Button>
-                </>
-              )}
-
-              {step === "tone" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 0 }}>
-                      When you reply to followers, how should I sound?
-                    </Typography.Paragraph>
-                  </SAgentBubble>
-
-                  <Radio.Group
-                    onChange={(event) => setTone(event.target.value as ToneId)}
-                    value={tone}
-                  >
-                    <Space direction="vertical">
-                      {TONE_OPTIONS.map((toneOption) => (
-                        <Radio key={toneOption.id} value={toneOption.id}>
-                          {toneOption.label} —{" "}
-                          <Typography.Text type="secondary">{toneOption.helper}</Typography.Text>
-                        </Radio>
-                      ))}
-                    </Space>
-                  </Radio.Group>
-
-                  <Alert
-                    type="info"
-                    showIcon
-                    message={`Tone selected: ${TONE_LABELS[tone]}`}
-                    description="You can edit tone and guardrails anytime after go-live."
-                  />
-
-                  <Button type="primary" onClick={proceedFromTone}>
-                    Continue
-                  </Button>
-                </>
-              )}
-
-              {step === "offer" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 0 }}>
-                      What&apos;s the main thing you offer? Tell me in a few words so I can qualify
-                      and recommend it naturally.
-                    </Typography.Paragraph>
-                  </SAgentBubble>
-
-                  <Space direction="vertical" style={{ width: "100%" }}>
-                    <Input
-                      value={offer}
-                      onChange={(event) => setOffer(event.target.value)}
-                      placeholder="Example: Online cake decorating masterclass"
-                    />
-                    <Input
-                      value={leadMagnet}
-                      onChange={(event) => setLeadMagnet(event.target.value)}
-                      placeholder="Example: Free recipe guide"
-                    />
-                    <Typography.Text type="secondary">
-                      I spotted a link in bio and will use it for recommendations unless you change
-                      it later.
-                    </Typography.Text>
-                  </Space>
-
-                  <Button
-                    type="primary"
-                    disabled={offer.trim().length === 0}
-                    onClick={() => setStep("skillOne")}
-                  >
-                    Continue
-                  </Button>
-                </>
-              )}
-
-              {step === "skillOne" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 0 }}>
-                      {monetizationPath
-                        ? `Here’s what I suggest first: welcome every new follower and offer your ${leadMagnet}.`
-                        : "Here’s what I suggest first: welcome every new follower and help with common FAQs."}
-                    </Typography.Paragraph>
-                  </SAgentBubble>
-
-                  <SMessagePreview>{skillOnePreviewMessage}</SMessagePreview>
-
-                  {!editingSkillOne && (
-                    <Space>
-                      <Button type="primary" onClick={handleSkillOneLooksGood}>
-                        Looks good
-                      </Button>
-                      <Button onClick={handleSkillOneEditStart}>Edit this</Button>
-                    </Space>
-                  )}
-
-                  {editingSkillOne && (
-                    <Space direction="vertical" style={{ width: "100%" }}>
-                      <Input.TextArea
-                        rows={4}
-                        value={skillOneDraft}
-                        onChange={(event) => setSkillOneDraft(event.target.value)}
-                      />
-                      <Space>
-                        <Button type="primary" onClick={handleSkillOneEditSave}>
-                          Save & continue
-                        </Button>
-                        <Button onClick={() => setEditingSkillOne(false)}>Cancel</Button>
-                      </Space>
-                    </Space>
-                  )}
-                </>
-              )}
-
-              {step === "skillTwo" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 0 }}>
-                      {skillTwoPrompt}
-                    </Typography.Paragraph>
-                  </SAgentBubble>
-
-                  <Space>
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        setSkillTwoEnabled(true);
-                        setStep("goLive");
-                      }}
+                    <span className="block text-sm font-semibold">{goal.label}</span>
+                    <span
+                      className={cn(
+                        "mt-1 block text-xs",
+                        selected ? "text-slate-200" : "text-muted-foreground",
+                      )}
                     >
-                      Yes, do it
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setSkillTwoEnabled(false);
-                        setStep("goLive");
-                      }}
-                    >
-                      Not yet
-                    </Button>
-                  </Space>
-                </>
-              )}
+                      {goal.description}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
-              {step === "goLive" && (
-                <>
-                  <SAgentBubble>
-                    <Typography.Paragraph style={{ marginBottom: 0 }}>
-                      You&apos;re all set! I&apos;ll start in pre-moderation mode so you approve
-                      messages before send. You can switch to autonomy skill-by-skill anytime.
-                    </Typography.Paragraph>
-                  </SAgentBubble>
+            <div className="mt-auto pt-6">
+              <Button
+                size="lg"
+                className="h-12 w-full rounded-full bg-[#2F6FEB] text-white hover:bg-[#2A63D3]"
+                disabled={!selectedGoal}
+                onClick={continueFromGoal}
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        )}
 
-                  <Row gutter={[12, 12]}>
-                    <Col span={8}>
-                      <Card size="small">
-                        <Statistic title="Active skills" value={activeSkills.length} />
-                      </Card>
-                    </Col>
-                    <Col span={8}>
-                      <Card size="small">
-                        <Statistic title="Pre-moderation" value="ON" />
-                      </Card>
-                    </Col>
-                    <Col span={8}>
-                      <Card size="small">
-                        <Statistic title="Conversations handled" value={0} />
-                      </Card>
-                    </Col>
-                  </Row>
+        {step === 2 && (
+          <div className="flex flex-1 flex-col">
+            <h2 className="text-[1.6rem] font-semibold leading-tight text-slate-800">
+              Let's create your Manychat practice.
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              We'll activate a focused starter bundle for{" "}
+              <span className="font-medium text-slate-700">{activeGoal?.label.toLowerCase()}</span>.
+            </p>
 
-                  <Card size="small" title="Creator model after onboarding">
-                    <Descriptions column={1} size="small">
-                      <Descriptions.Item label="Niche">{creatorNiche}</Descriptions.Item>
-                      <Descriptions.Item label="Product">{offer}</Descriptions.Item>
-                      <Descriptions.Item label="Goal">{getGoalsLabel(goals)}</Descriptions.Item>
-                      <Descriptions.Item label="Tone">{TONE_LABELS[tone]}</Descriptions.Item>
-                      <Descriptions.Item label="Lead magnet">{leadMagnet}</Descriptions.Item>
-                      <Descriptions.Item label="Active skills">
-                        {activeSkills.map((skill) => (
-                          <Tag key={skill} color="processing">
-                            {skill}
-                          </Tag>
-                        ))}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Trust level">
-                        <Tag color="gold">Pre-moderation ON</Tag>
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Skill customization">
-                        {skillOneConfigured === "custom"
-                          ? "First skill customized"
-                          : "Default skill copy accepted"}
-                      </Descriptions.Item>
-                    </Descriptions>
-                  </Card>
+            <div className="mt-5 space-y-3">
+              {SKILLS.map((skill) => (
+                <Card key={skill.title} className="rounded-2xl border-slate-200 shadow-none">
+                  <CardHeader className="pb-2 pt-4">
+                    <CardTitle className="flex items-center gap-2 text-sm">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2F6FEB]/10 text-[#2F6FEB]">
+                        <Sparkles className="h-4 w-4" />
+                      </span>
+                      {skill.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pb-4">
+                    <CardDescription className="text-xs">{skill.description}</CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-                  <Space>
-                    <Button type="primary" onClick={resetFlow}>
-                      Restart onboarding
-                    </Button>
-                    <Button onClick={() => setStep("skillOne")}>Adjust skills</Button>
-                  </Space>
-                </>
-              )}
-            </Space>
-          </Card>
+            <div className="mt-auto grid grid-cols-2 gap-3 pt-6">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="h-12 rounded-full"
+                onClick={() => setStep(1)}
+              >
+                Back
+              </Button>
+              <Button
+                size="lg"
+                className="h-12 rounded-full bg-[#2F6FEB] text-white hover:bg-[#2A63D3]"
+                onClick={() => setStep(3)}
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        )}
 
-          <Card size="small">
-            <Typography.Text type="secondary">
-              Principles: conversation (not configuration), index first, no jargon, and trust
-              gradient from supervised to autonomous.
-            </Typography.Text>
-            <Divider style={{ margin: "12px 0" }} />
-            <Typography.Text type="secondary">
-              Prototype note: this flow uses local state only and does not call backend APIs yet.
-            </Typography.Text>
-          </Card>
-        </Space>
-      </SFlowFrame>
-    </SContainer>
+        {step === 3 && (
+          <div className="flex flex-1 flex-col">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-[1.55rem] font-semibold leading-tight text-slate-800">
+                  Try Manychat Pro
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Unlock goal-based automations and start your first live trial.
+                </p>
+              </div>
+              <button
+                type="button"
+                aria-label="Close paywall"
+                className="rounded-full border border-slate-200 p-1.5 text-slate-500"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-3">
+              <button
+                type="button"
+                onClick={() => setSelectedPlan("annual")}
+                className={cn(
+                  "w-full rounded-2xl border p-4 text-left transition",
+                  selectedPlan === "annual"
+                    ? "border-[#FF8C1A] bg-[#FF8C1A]/10"
+                    : "border-slate-200 bg-slate-50",
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-slate-900">$69.99 Annual ($5.84/month)</p>
+                  <Badge className="bg-[#2F6FEB] text-white">Best value</Badge>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">First 14 days free</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedPlan("monthly")}
+                className={cn(
+                  "w-full rounded-2xl border p-4 text-left transition",
+                  selectedPlan === "monthly"
+                    ? "border-[#2F6FEB] bg-[#2F6FEB]/10"
+                    : "border-slate-200 bg-slate-50",
+                )}
+              >
+                <p className="font-semibold text-slate-900">$12.99 Monthly</p>
+                <p className="mt-1 text-xs text-muted-foreground">First 7 days free</p>
+              </button>
+            </div>
+
+            <Separator className="my-4" />
+
+            {startedTrial && (
+              <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+                <p className="flex items-center gap-2 font-medium">
+                  <Check className="h-4 w-4" />
+                  Trial started in prototype mode
+                </p>
+                <p className="mt-1 text-xs">
+                  Next step: connect Instagram and activate your first two skills.
+                </p>
+              </div>
+            )}
+
+            <Button
+              size="lg"
+              className="mt-auto h-12 rounded-full bg-[#2F6FEB] text-white hover:bg-[#2A63D3]"
+              onClick={() => setStartedTrial(true)}
+            >
+              Start your free trial
+            </Button>
+            <p className="mt-3 text-center text-[11px] text-muted-foreground">
+              Restore Purchase · Terms & Conditions
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-center pb-3">
+        <Circle className="h-2.5 w-2.5 fill-slate-900 text-slate-900" />
+      </div>
+    </div>
   );
 };
 

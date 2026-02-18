@@ -81,11 +81,10 @@ Full guide:
 
 This repository now includes a Vite + React + TypeScript **mobile-first** prototype app with:
 
-- External token source file: `design-system/tokens.json`
-- External token adapter: `src/theme/adapters/externalTokenAdapter.ts`
+- Layout inspired by the 4-screen mobile onboarding reference image
+- **shadcn/ui** component system (`src/components/ui/*`)
 - Manychat-branded logo, typography, and color tokens
-- Ant Design mapping: `src/theme/theme.ts` (`antdThemeConfig`)
-- Styled-components theme: `src/theme/theme.ts` (`styledTheme`)
+- Conversational onboarding flow adapted for mobile cards/sheets
 
 Commands:
 

@@ -1,54 +1,43 @@
-# Onboarding Flow for Creators (Prototype Implementation)
+# Onboarding Flow for Creators (Mobile + shadcn Prototype)
 
-This prototype implements the JTBD conversation flow for creators in:
+This prototype now uses a 4-screen mobile onboarding layout inspired by the provided reference
+image and implemented with **shadcn/ui** components.
+
+## Location
 
 - Route: `/onboarding`
-- Component: `src/features/onboarding/OnboardingFlow.tsx`
-- Mobile shell: `src/App.tsx`
+- Main file: `src/features/onboarding/OnboardingFlow.tsx`
+- Mobile app shell: `src/App.tsx`
+- Design system components: `src/components/ui/*`
 
-## UX scope
+## Implemented mobile screens
 
-- Mobile-only presentation (phone frame, no desktop navigation)
-- Manychat branding applied (logo, Inter typography, Manychat color palette)
+1. **Goal selection**
+   - Prompt: "What's your top onboarding goal?"
+   - Rounded option list with one active choice
+   - Continue button disabled until selection
 
-## Implemented steps
+2. **Goal confirmation**
+   - Same list layout with selected state emphasized
+   - Continue advances to setup preview
 
-1. **Connect Instagram**
-   - CTA to begin onboarding
-2. **Auto-index simulation**
-   - Progress UI: "Getting to know your Instagram…"
-3. **Personalized greeting + tone check**
-   - Confirmation or correction path
-4. **Goals selection**
-   - Multi-select from:
-     - Reply to followers
-     - Sell more
-     - Grow email list
-     - Answer FAQs
-5. **Tone selection**
-   - Warm / direct / playful / professional
-6. **Offer input (conditional)**
-   - Only shown for monetization paths
-7. **Skill 1 activation**
-   - Follow-to-DM preview with editable copy
-8. **Skill 2 activation**
-   - Monetization path: Comment-to-DM
-   - Engagement path: Story mention auto-reply
-9. **Go live summary**
-   - Active skills
-   - Pre-moderation ON
-   - Creator model snapshot
+3. **Skill bundle preview**
+   - Three starter skills shown as shadcn cards
+   - Back + Continue action row
 
-## Branching logic implemented
+4. **Trial / paywall screen**
+   - Two plan cards (annual/monthly)
+   - Primary CTA: Start free trial
+   - Inline success state after CTA
 
-- If user selects monetization goals (sell or email growth):
-  - Offer step is included
-  - Skills proposed are monetization-focused
-- If user selects engagement-only goals:
-  - Offer step is skipped
-  - Skills proposed are engagement-focused
+## Visual and system decisions
+
+- Mobile-only viewport and phone frame presentation
+- shadcn/ui components (Button, Card, Badge, Progress, Separator)
+- Manychat branding (logo, typography, color tokens)
+- Abstract top illustration and rounded bottom sheet per reference composition
 
 ## Notes
 
-- This is a frontend prototype with local state only.
-- Next integration step is connecting real OAuth/indexing/profile APIs and persisting onboarding state.
+- This remains a frontend prototype with local state only.
+- Next step for realism: connect the screen transitions to real onboarding API state.
