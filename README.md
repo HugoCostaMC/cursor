@@ -119,6 +119,9 @@ In your GitHub repo:
 1. Go to **Settings -> Pages**
 2. Under **Build and deployment**, set **Source** to **GitHub Actions**
 
+If deployment fails with `Resource not accessible by integration`, enable Pages from an account
+with **admin** rights to the repo and rerun the workflow.
+
 ### Expected URL
 
 For this repository (`HugoCostaMC/cursor`), the Pages URL is:
