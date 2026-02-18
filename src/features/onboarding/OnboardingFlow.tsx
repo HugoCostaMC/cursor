@@ -166,7 +166,7 @@ const OnboardingFlow = () => {
             <div className="mt-auto pt-6">
               <Button
                 size="lg"
-                className="h-12 w-full rounded-full bg-[#2F6FEB] text-white hover:bg-[#2A63D3]"
+                className="h-12 w-full rounded-full bg-[#1F5ED8] text-white hover:bg-[#1A4FC0]"
                 disabled={!selectedGoal}
                 onClick={continueFromGoal}
               >
@@ -198,7 +198,7 @@ const OnboardingFlow = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pb-4">
-                    <CardDescription className="text-xs">{skill.description}</CardDescription>
+                    <CardDescription className="text-xs text-slate-600">{skill.description}</CardDescription>
                   </CardContent>
                 </Card>
               ))}
@@ -215,7 +215,7 @@ const OnboardingFlow = () => {
               </Button>
               <Button
                 size="lg"
-                className="h-12 rounded-full bg-[#2F6FEB] text-white hover:bg-[#2A63D3]"
+                className="h-12 rounded-full bg-[#1F5ED8] text-white hover:bg-[#1A4FC0]"
                 onClick={() => setStep(3)}
               >
                 Continue
@@ -231,14 +231,14 @@ const OnboardingFlow = () => {
                 <h2 className="text-[1.55rem] font-semibold leading-tight text-slate-800">
                   Try Manychat Pro
                 </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-slate-600">
                   Unlock goal-based automations and start your first live trial.
                 </p>
               </div>
               <button
                 type="button"
                 aria-label="Close paywall"
-                className="rounded-full border border-slate-200 p-1.5 text-slate-500"
+                className="rounded-full border border-slate-300 p-1.5 text-slate-600"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -252,14 +252,14 @@ const OnboardingFlow = () => {
                   "w-full rounded-2xl border p-4 text-left transition",
                   selectedPlan === "annual"
                     ? "border-[#FF8C1A] bg-[#FF8C1A]/10"
-                    : "border-slate-200 bg-slate-50",
+                    : "border-slate-300 bg-slate-50",
                 )}
               >
                 <div className="flex items-center justify-between">
                   <p className="font-semibold text-slate-900">$69.99 Annual ($5.84/month)</p>
-                  <Badge className="bg-[#2F6FEB] text-white">Best value</Badge>
+                  <Badge className="bg-[#1F5ED8] text-white">Best value</Badge>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">First 14 days free</p>
+                <p className="mt-1 text-xs text-slate-600">First 14 days free</p>
               </button>
 
               <button
@@ -268,19 +268,19 @@ const OnboardingFlow = () => {
                 className={cn(
                   "w-full rounded-2xl border p-4 text-left transition",
                   selectedPlan === "monthly"
-                    ? "border-[#2F6FEB] bg-[#2F6FEB]/10"
-                    : "border-slate-200 bg-slate-50",
+                    ? "border-[#1F5ED8] bg-[#1F5ED8]/10"
+                    : "border-slate-300 bg-slate-50",
                 )}
               >
                 <p className="font-semibold text-slate-900">$12.99 Monthly</p>
-                <p className="mt-1 text-xs text-muted-foreground">First 7 days free</p>
+                <p className="mt-1 text-xs text-slate-600">First 7 days free</p>
               </button>
             </div>
 
             <Separator className="my-4" />
 
             {startedTrial && (
-              <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+              <div className="mb-3 rounded-xl border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
                 <p className="flex items-center gap-2 font-medium">
                   <Check className="h-4 w-4" />
                   Trial started in prototype mode
@@ -293,12 +293,12 @@ const OnboardingFlow = () => {
 
             <Button
               size="lg"
-              className="mt-auto h-12 rounded-full bg-[#2F6FEB] text-white hover:bg-[#2A63D3]"
+              className="mt-auto h-12 rounded-full bg-[#1F5ED8] text-white hover:bg-[#1A4FC0]"
               onClick={() => setStartedTrial(true)}
             >
               Start your free trial
             </Button>
-            <p className="mt-3 text-center text-[11px] text-muted-foreground">
+            <p className="mt-3 text-center text-[11px] text-slate-600">
               Restore Purchase · Terms & Conditions
             </p>
           </div>

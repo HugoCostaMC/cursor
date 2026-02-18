@@ -5,34 +5,35 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: 210 50% 98%;
-  --foreground: 222 47% 12%;
+  --background: 210 38% 98%;
+  --foreground: 222 47% 11%;
 
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 12%;
+  --card-foreground: 222 47% 11%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 12%;
+  --popover-foreground: 222 47% 11%;
 
-  --primary: 196 100% 45%;
+  --primary: 221 83% 45%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 146 90% 46%;
-  --secondary-foreground: 221 39% 11%;
+  --secondary: 151 65% 33%;
+  --secondary-foreground: 0 0% 100%;
 
-  --muted: 210 30% 95%;
-  --muted-foreground: 215 17% 45%;
+  --muted: 210 28% 95%;
+  --muted-foreground: 215 19% 34%;
 
-  --accent: 229 100% 52%;
+  --accent: 225 100% 52%;
   --accent-foreground: 0 0% 100%;
 
-  --destructive: 342 33% 42%;
+  --destructive: 345 49% 41%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 214 32% 90%;
-  --input: 214 32% 90%;
-  --ring: 196 100% 45%;
+  --border: 215 28% 86%;
+  --input: 215 28% 86%;
+  --ring: 221 83% 45%;
   --radius: 1rem;
+  color-scheme: light;
 }
 
 .dark {
@@ -54,7 +55,7 @@
   --destructive-foreground: 0 0% 100%;
   --border: 216 20% 18%;
   --input: 216 20% 18%;
-  --ring: 196 100% 45%;
+  --ring: 221 83% 45%;
 }
 
 @theme inline {
@@ -95,6 +96,7 @@ body {
   min-height: 100vh;
   background: hsl(var(--background));
   color: hsl(var(--foreground));
+  color-scheme: light;
   font-family:
     Inter,
     "SF Pro Display",
