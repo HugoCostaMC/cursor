@@ -12,7 +12,6 @@ import {
   Row,
   Space,
   Statistic,
-  Steps,
   Tag,
   Typography,
 } from "antd";
@@ -101,13 +100,11 @@ const TONE_LABELS: Record<ToneId, string> = {
 };
 
 const SContainer = styled.div`
-  display: flex;
-  justify-content: center;
   width: 100%;
 `;
 
 const SFlowFrame = styled.div`
-  width: min(100%, 560px);
+  width: 100%;
 `;
 
 const SAgentBubble = styled.div`
@@ -141,6 +138,13 @@ const SMessagePreview = styled.div`
   background: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.text};
   white-space: pre-line;
+`;
+
+const SStepMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 const getGoalsLabel = (selectedIds: string[]): string => {
@@ -259,6 +263,8 @@ const OnboardingFlow = () => {
     }
   }, [monetizationPath, step]);
 
+  const flowProgress = Math.round(((currentStepIndex + 1) / stepLabels.length) * 100);
+
   const skillOneDefaultMessage = monetizationPath
     ? `Hey there 👋 Thanks for following!\nI’d love to share my ${leadMagnet} and point you to the ${offer}. Want me to send it?`
     : `Hey there 👋 Thanks for following!\nI can help with common questions and point you to the best post when you need details.`;
@@ -338,11 +344,15 @@ const OnboardingFlow = () => {
       <SFlowFrame>
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
           <Card size="small">
-            <Steps
-              current={currentStepIndex}
-              size="small"
-              items={stepLabels.map((label) => ({ title: label }))}
-            />
+            <Space direction="vertical" size="small" style={{ width: "100%" }}>
+              <SStepMeta>
+                <Typography.Text strong>
+                  Step {currentStepIndex + 1} of {stepLabels.length}
+                </Typography.Text>
+                <Tag color="processing">{stepLabels[currentStepIndex]}</Tag>
+              </SStepMeta>
+              <Progress percent={flowProgress} showInfo={false} />
+            </Space>
           </Card>
 
           <Card title="Mobile-first conversational onboarding">
@@ -351,8 +361,8 @@ const OnboardingFlow = () => {
                 <>
                   <SAgentBubble>
                     <Typography.Paragraph style={{ marginBottom: 8 }}>
-                      Connect Instagram and I’ll build your creator profile automatically from your
-                      content, bio, and audience signals.
+                      Connect Instagram and Manychat will build your creator profile automatically
+                      from your content, bio, and audience signals.
                     </Typography.Paragraph>
                     <Typography.Text type="secondary">
                       No forms, no setup wizard — just a quick connection.

@@ -58,20 +58,21 @@ export interface DesignTokens {
 }
 
 export const defaultDesignTokens: DesignTokens = {
+  // Derived from status.manychat.com public CSS variables/utilities.
   colors: {
-    primary: "#6E3FF3",
-    primaryHover: "#5B2ED9",
-    secondary: "#00B4D8",
-    background: "#F5F5F5",
+    primary: "#00A6E6",
+    primaryHover: "#0A2FFF",
+    secondary: "#0CDE6F",
+    background: "#F7FAFC",
     surface: "#FFFFFF",
-    sidebar: "#1A1A2E",
-    sidebarHover: "#2A2A4A",
-    text: "#1A1A2E",
-    textSecondary: "#6B7280",
+    sidebar: "#004968",
+    sidebarHover: "#0A2FFF",
+    text: "#111827",
+    textSecondary: "#4B5563",
     border: "#E5E7EB",
-    success: "#10B981",
-    warning: "#F59E0B",
-    error: "#EF4444",
+    success: "#0CDE6F",
+    warning: "#FF8C00",
+    error: "#8F485D",
   },
   spacing: {
     xs: "4px",
@@ -87,7 +88,8 @@ export const defaultDesignTokens: DesignTokens = {
     lg: "12px",
   },
   typography: {
-    fontFamily: "'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    fontFamily:
+      "Inter, 'SF Pro Display', -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     fontSizeSm: "12px",
     fontSizeBase: "14px",
     fontSizeLg: "16px",

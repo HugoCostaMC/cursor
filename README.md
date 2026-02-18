@@ -75,13 +75,15 @@ Full guide:
 - `docs/external-design-system-connection.md`
 - `docs/onboarding-flow-for-creators.md`
 - `docs/deploy-github-pages.md`
+- `docs/manychat-branding-source.md`
 
-## 7) Run the wired prototype app
+## 7) Run the mobile Manychat prototype app
 
-This repository now includes a Vite + React + TypeScript prototype app with direct token wiring:
+This repository now includes a Vite + React + TypeScript **mobile-first** prototype app with:
 
 - External token source file: `design-system/tokens.json`
 - External token adapter: `src/theme/adapters/externalTokenAdapter.ts`
+- Manychat-branded logo, typography, and color tokens
 - Ant Design mapping: `src/theme/theme.ts` (`antdThemeConfig`)
 - Styled-components theme: `src/theme/theme.ts` (`styledTheme`)
 
@@ -94,9 +96,8 @@ npm run dev
 
 Prototype routes:
 
-- `/` — home overview
-- `/onboarding` — conversational creator onboarding flow (JTBD-based)
-- `/tokens` — token previews
+- `/` — mobile onboarding prototype
+- `/onboarding` — same mobile onboarding prototype route
 
 Refresh tokens from your external system:
 
@@ -130,6 +131,5 @@ For this repository (`HugoCostaMC/cursor`), the Pages URL is:
 
 Since the production router uses hash routing for reliability on Pages:
 
-- Home: `https://hugocostamc.github.io/cursor/#/`
+- Prototype: `https://hugocostamc.github.io/cursor/#/`
 - Onboarding: `https://hugocostamc.github.io/cursor/#/onboarding`
-- Tokens: `https://hugocostamc.github.io/cursor/#/tokens`

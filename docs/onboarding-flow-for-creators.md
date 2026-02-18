@@ -4,6 +4,12 @@ This prototype implements the JTBD conversation flow for creators in:
 
 - Route: `/onboarding`
 - Component: `src/features/onboarding/OnboardingFlow.tsx`
+- Mobile shell: `src/App.tsx`
+
+## UX scope
+
+- Mobile-only presentation (phone frame, no desktop navigation)
+- Manychat branding applied (logo, Inter typography, Manychat color palette)
 
 ## Implemented steps
 
