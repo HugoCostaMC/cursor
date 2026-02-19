@@ -6,6 +6,10 @@ Quartz-style conversational news briefing app with:
 - live feed aggregation from multiple RSS news directories
 - personalized topic selection and saved preferences
 - adjustable comedy tone (`Straight`, `Wry`, `Chaotic`)
+- first-run onboarding flow with profile setup
+- AI-style summary rewrite modes (`Original`, `Concise AI`, `Deep Dive AI`, `ELI5 AI`)
+- source reliability indicators
+- push notification mock center (demo-only)
 
 ## Quick start
 
@@ -26,6 +30,8 @@ See `docs/PLAN.md` for the implementation plan and next-iteration roadmap.
 - **Backend API**: `src/app/api/news/route.ts` (RSS aggregation/normalization)
 - **News directories**: `src/lib/news-directory.ts`
 - **Comedy/personalization logic**: `src/lib/comedy.ts`
+- **AI rewrite logic**: `src/lib/ai-rewrite.ts`
+- **Source reliability mapping**: `src/lib/source-reliability.ts`
 
 ## API
 
@@ -42,3 +48,4 @@ Response includes:
 
 - No API key required for this prototype.
 - If live RSS feeds fail temporarily, the API returns fallback stories so the UI still works.
+- Push notifications are mocked in-app for prototype demos and are not OS-level notifications.

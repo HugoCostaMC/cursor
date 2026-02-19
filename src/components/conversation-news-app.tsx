@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import { introLineForBrief, comedyLineForStory, followUpPrompt } from "@/lib/comedy";
+import { REWRITE_MODES, rewriteLabel, rewriteSummary } from "@/lib/ai-rewrite";
 import { AVAILABLE_TOPICS, DEFAULT_TOPICS, TOPIC_LABELS } from "@/lib/news-directory";
-import { HumorMode, NewsStory, Topic } from "@/lib/types";
+import { getSourceReliability, RELIABILITY_LABELS } from "@/lib/source-reliability";
+import { HumorMode, MockNotification, NewsStory, RewriteMode, Topic } from "@/lib/types";
 
 type ChatRole = "assistant" | "user";
 
@@ -21,11 +23,31 @@ interface NewsApiResponse {
   stories: NewsStory[];
 }
 
+interface StoredPreferences {
+  topics?: Topic[];
+  humorMode?: HumorMode;
+  rewriteMode?: RewriteMode;
+  notificationsEnabled?: boolean;
+  userName?: string;
+  onboardingComplete?: boolean;
+}
+
 const HUMOR_OPTIONS: Array<{ id: HumorMode; label: string }> = [
   { id: "straight", label: "Straight" },
   { id: "wry", label: "Wry" },
   { id: "chaotic", label: "Chaotic" }
 ];
+
+const REWRITE_OPTIONS = REWRITE_MODES.map((id) => ({
+  id,
+  label: rewriteLabel(id)
+}));
+
+const RELIABILITY_SHORT: Record<string, string> = {
+  "High reliability": "High",
+  "Medium reliability": "Medium",
+  Reference: "Reference"
+};
 
 const STORAGE_KEY = "quartz-brief-prototype-preferences";
 
@@ -51,16 +73,23 @@ function formatPublishedAt(value: string): string {
 export default function ConversationNewsApp() {
   const [topics, setTopics] = useState<Topic[]>(DEFAULT_TOPICS);
   const [humorMode, setHumorMode] = useState<HumorMode>("wry");
+  const [rewriteMode, setRewriteMode] = useState<RewriteMode>("original");
   const [stories, setStories] = useState<NewsStory[]>([]);
   const [storyIndex, setStoryIndex] = useState(0);
   const [directories, setDirectories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userName, setUserName] = useState("");
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [onboardingError, setOnboardingError] = useState<string | null>(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notifications, setNotifications] = useState<MockNotification[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "opening-line",
       role: "assistant",
-      text: "Good morning. I can brief you like Quartz: short, conversational, and a little funny."
+      text: "Welcome to Quartz Brief. Add your preferences and I will build a personalized conversation."
     }
   ]);
 
@@ -69,9 +98,16 @@ export default function ConversationNewsApp() {
   }, []);
 
   const fetchNews = useCallback(
-    async (nextTopics: Topic[], nextHumor: HumorMode, userPrompt?: string) => {
-      if (userPrompt) {
-        pushMessage("user", userPrompt);
+    async (
+      nextTopics: Topic[],
+      nextHumor: HumorMode,
+      options?: {
+        userPrompt?: string;
+        displayName?: string;
+      }
+    ) => {
+      if (options?.userPrompt) {
+        pushMessage("user", options.userPrompt);
       }
 
       setIsLoading(true);
@@ -93,12 +129,17 @@ export default function ConversationNewsApp() {
         setStoryIndex(0);
         setDirectories(payload.directories ?? []);
 
-        pushMessage("assistant", introLineForBrief(nextTopics, nextHumor, incomingStories.length));
+        const intro = introLineForBrief(nextTopics, nextHumor, incomingStories.length);
+        const displayName = options?.displayName?.trim() ?? "";
+        pushMessage("assistant", displayName ? `${displayName}, ${intro}` : intro);
         if (payload.fallback) {
           pushMessage(
             "assistant",
             "Live directories are taking a coffee break, so I switched to a fallback wire."
           );
+        }
+        if (payload.failures.length > 0) {
+          pushMessage("assistant", `${payload.failures.length} directory sources timed out. I kept going.`);
         }
       } catch (fetchError) {
         setError("Could not reach live feeds. Using local fallback cards for now.");
@@ -119,16 +160,32 @@ export default function ConversationNewsApp() {
   useEffect(() => {
     let savedTopics = DEFAULT_TOPICS;
     let savedHumor: HumorMode = "wry";
+    let savedRewriteMode: RewriteMode = "original";
+    let savedNotifications = false;
+    let savedOnboardingComplete = false;
+    let savedName = "";
 
     try {
       const stored = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
       if (stored) {
-        const parsed = JSON.parse(stored) as { topics?: Topic[]; humorMode?: HumorMode };
+        const parsed = JSON.parse(stored) as StoredPreferences;
         if (Array.isArray(parsed.topics) && parsed.topics.length > 0) {
           savedTopics = parsed.topics.filter((topic): topic is Topic => AVAILABLE_TOPICS.includes(topic));
         }
         if (parsed.humorMode && HUMOR_OPTIONS.some((option) => option.id === parsed.humorMode)) {
           savedHumor = parsed.humorMode;
+        }
+        if (parsed.rewriteMode && REWRITE_OPTIONS.some((option) => option.id === parsed.rewriteMode)) {
+          savedRewriteMode = parsed.rewriteMode;
+        }
+        if (typeof parsed.notificationsEnabled === "boolean") {
+          savedNotifications = parsed.notificationsEnabled;
+        }
+        if (typeof parsed.onboardingComplete === "boolean") {
+          savedOnboardingComplete = parsed.onboardingComplete;
+        }
+        if (typeof parsed.userName === "string") {
+          savedName = parsed.userName;
         }
       }
     } catch {
@@ -137,11 +194,19 @@ export default function ConversationNewsApp() {
 
     setTopics(savedTopics);
     setHumorMode(savedHumor);
-    void fetchNews(savedTopics, savedHumor);
+    setRewriteMode(savedRewriteMode);
+    setNotificationsEnabled(savedNotifications);
+    setOnboardingComplete(savedOnboardingComplete);
+    setUserName(savedName);
+    setIsHydrated(true);
+
+    if (savedOnboardingComplete) {
+      void fetchNews(savedTopics, savedHumor, { displayName: savedName });
+    }
   }, [fetchNews]);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || !isHydrated) {
       return;
     }
 
@@ -149,10 +214,47 @@ export default function ConversationNewsApp() {
       STORAGE_KEY,
       JSON.stringify({
         topics,
-        humorMode
+        humorMode,
+        rewriteMode,
+        notificationsEnabled,
+        userName,
+        onboardingComplete
       })
     );
-  }, [topics, humorMode]);
+  }, [topics, humorMode, rewriteMode, notificationsEnabled, userName, onboardingComplete, isHydrated]);
+
+  useEffect(() => {
+    if (!notificationsEnabled || !onboardingComplete || stories.length === 0) {
+      return;
+    }
+
+    setNotifications((previous) => {
+      const known = new Set(previous.map((item) => item.id));
+      const generated = stories.slice(0, 3).flatMap((story) => {
+        const id = `story-${story.id}`;
+        if (known.has(id)) {
+          return [];
+        }
+
+        return [
+          {
+            id,
+            createdAt: new Date().toISOString(),
+            message: `${TOPIC_LABELS[story.topic]} alert: ${story.title}`,
+            topic: story.topic,
+            source: story.source,
+            read: false
+          }
+        ];
+      });
+
+      if (generated.length === 0) {
+        return previous;
+      }
+
+      return [...generated, ...previous].slice(0, 10);
+    });
+  }, [notificationsEnabled, onboardingComplete, stories]);
 
   const activeStory = useMemo(() => stories[storyIndex] ?? null, [stories, storyIndex]);
 
@@ -170,22 +272,42 @@ export default function ConversationNewsApp() {
     return followUpPrompt(activeStory.topic, humorMode);
   }, [activeStory, humorMode]);
 
+  const rewrittenSummary = useMemo(() => {
+    if (!activeStory) {
+      return null;
+    }
+
+    return rewriteSummary(activeStory.summary, rewriteMode);
+  }, [activeStory, rewriteMode]);
+
+  const storyReliability = useMemo(() => {
+    if (!activeStory) {
+      return null;
+    }
+    return getSourceReliability(activeStory.source);
+  }, [activeStory]);
+
+  const unreadNotifications = notifications.filter((item) => !item.read).length;
+
   const toggleTopic = (topic: Topic) => {
     const hasTopic = topics.includes(topic);
     const nextTopics = hasTopic ? topics.filter((item) => item !== topic) : [...topics, topic];
 
     if (nextTopics.length === 0) {
+      setOnboardingError("Pick at least one topic.");
       return;
     }
 
+    setOnboardingError(null);
     setTopics(nextTopics);
-    void fetchNews(
-      nextTopics,
-      humorMode,
-      hasTopic
-        ? `Drop ${TOPIC_LABELS[topic]} for now.`
-        : `Add ${TOPIC_LABELS[topic]} to my briefing mix.`
-    );
+    if (onboardingComplete) {
+      void fetchNews(nextTopics, humorMode, {
+        userPrompt: hasTopic
+          ? `Drop ${TOPIC_LABELS[topic]} for now.`
+          : `Add ${TOPIC_LABELS[topic]} to my briefing mix.`,
+        displayName: userName
+      });
+    }
   };
 
   const cycleStory = () => {
@@ -201,21 +323,92 @@ export default function ConversationNewsApp() {
 
   const switchHumorMode = (nextMode: HumorMode) => {
     setHumorMode(nextMode);
-    pushMessage("user", `Tone: ${nextMode}`);
-    pushMessage("assistant", `Copy that. I'll keep it ${nextMode}.`);
+    if (onboardingComplete) {
+      pushMessage("user", `Tone: ${nextMode}`);
+      pushMessage("assistant", `Copy that. I'll keep it ${nextMode}.`);
+    }
+  };
+
+  const switchRewriteMode = (nextMode: RewriteMode) => {
+    setRewriteMode(nextMode);
+    if (onboardingComplete) {
+      pushMessage("user", `Rewrite mode: ${rewriteLabel(nextMode)}`);
+      pushMessage("assistant", `AI rewrite mode set to ${rewriteLabel(nextMode)}.`);
+    }
+  };
+
+  const toggleNotifications = () => {
+    setNotificationsEnabled((current) => {
+      const next = !current;
+      if (onboardingComplete) {
+        pushMessage("user", next ? "Enable push alerts." : "Mute push alerts.");
+        pushMessage(
+          "assistant",
+          next
+            ? "Push mock enabled. I will queue notification previews for top stories."
+            : "Push mock paused. I will keep alerts inside the app."
+        );
+      }
+      return next;
+    });
+  };
+
+  const markNotificationsRead = () => {
+    setNotifications((previous) => previous.map((item) => ({ ...item, read: true })));
+  };
+
+  const submitOnboarding = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (topics.length === 0) {
+      setOnboardingError("Pick at least one topic.");
+      return;
+    }
+
+    setOnboardingError(null);
+    const displayName = userName.trim();
+    setOnboardingComplete(true);
+    pushMessage(
+      "assistant",
+      displayName
+        ? `Great to meet you, ${displayName}. Preparing your personalized news brief.`
+        : "Great. Preparing your personalized news brief."
+    );
+
+    if (notificationsEnabled) {
+      pushMessage("assistant", "Push mock is active, so I will queue demo alerts as stories arrive.");
+    }
+
+    void fetchNews(topics, humorMode, { displayName });
+  };
+
+  const useDemoProfile = () => {
+    const displayName = "Alex";
+    setUserName(displayName);
+    setTopics(DEFAULT_TOPICS);
+    setHumorMode("wry");
+    setRewriteMode("concise");
+    setNotificationsEnabled(true);
+    setOnboardingError(null);
+    setOnboardingComplete(true);
+    pushMessage("assistant", "Loaded demo profile for Alex. Briefing in progress.");
+    void fetchNews(DEFAULT_TOPICS, "wry", { displayName });
   };
 
   const activeTopicLabels = topics.map((topic) => TOPIC_LABELS[topic]).join(", ");
+  const currentName = userName.trim() || "Guest";
 
   return (
     <main className="prototype-root">
       <section className="plan-panel">
-        <h2>Prototype plan</h2>
+        <h2>Prototype plan (v2)</h2>
         <ol>
           <li>Ingest RSS news directories by topic.</li>
           <li>Deliver updates in a chat-native briefing format.</li>
-          <li>Personalize feed + tone with lightweight comedy bits.</li>
-          <li>Keep a Quartz-style mobile-first layout for screenshot-ready demos.</li>
+          <li>Personalize feed + tone with comedy and rewrite modes.</li>
+          <li>Show source reliability indicators on every story.</li>
+          <li>Ship first-run onboarding and saved user profile.</li>
+          <li>Mock push notification previews for product demos.</li>
         </ol>
       </section>
 
@@ -230,6 +423,10 @@ export default function ConversationNewsApp() {
 
         <p className="directory-line">
           Directories: {directories.length ? directories.join(" · ") : "Loading live feeds..."}
+        </p>
+        <p className="directory-line status-line">
+          Reader: {currentName} · Rewrite: {rewriteLabel(rewriteMode)} · Push:{" "}
+          {notificationsEnabled ? "enabled" : "disabled"}
         </p>
 
         <div className="controls">
@@ -258,6 +455,30 @@ export default function ConversationNewsApp() {
               </button>
             ))}
           </div>
+
+          <div className="topic-grid rewrite-grid">
+            {REWRITE_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`chip ${rewriteMode === option.id ? "chip-active" : ""}`}
+                onClick={() => switchRewriteMode(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="notification-toggle-row">
+            <button
+              type="button"
+              className={`chip notification-toggle ${notificationsEnabled ? "chip-active" : ""}`}
+              onClick={toggleNotifications}
+            >
+              {notificationsEnabled ? "Disable push mock" : "Enable push mock"}
+            </button>
+            <span className="notification-count">{unreadNotifications} unread</span>
+          </div>
         </div>
 
         <div className="conversation-window">
@@ -276,9 +497,18 @@ export default function ConversationNewsApp() {
                 <span>{activeStory.source}</span>
                 <span>{formatPublishedAt(activeStory.publishedAt)}</span>
               </div>
+              {storyReliability && (
+                <p
+                  className={`reliability-pill reliability-${storyReliability.level}`}
+                  title={storyReliability.note}
+                >
+                  {RELIABILITY_LABELS[storyReliability.level]}
+                </p>
+              )}
 
               <h3>{activeStory.title}</h3>
-              <p>{activeStory.summary}</p>
+              <p className="rewrite-mode-label">{rewriteLabel(rewriteMode)}</p>
+              <p>{rewrittenSummary}</p>
 
               {activeStory.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element -- RSS image hosts are dynamic in this prototype.
@@ -301,7 +531,16 @@ export default function ConversationNewsApp() {
         </div>
 
         <footer className="footer-actions">
-          <button type="button" className="cta" onClick={() => void fetchNews(topics, humorMode, "what is the strategy?")}>
+          <button
+            type="button"
+            className="cta"
+            onClick={() =>
+              void fetchNews(topics, humorMode, {
+                userPrompt: "what is the strategy?",
+                displayName: userName
+              })
+            }
+          >
             what&apos;s the strategy? 🤔
           </button>
           <button type="button" className="cta" onClick={cycleStory}>
@@ -310,9 +549,17 @@ export default function ConversationNewsApp() {
           <button
             type="button"
             className="cta cta-alt"
-            onClick={() => void fetchNews(topics, humorMode, `Refresh my ${activeTopicLabels} brief.`)}
+            onClick={() =>
+              void fetchNews(topics, humorMode, {
+                userPrompt: `Refresh my ${activeTopicLabels} brief.`,
+                displayName: userName
+              })
+            }
           >
             refresh brief
+          </button>
+          <button type="button" className="cta cta-alt" onClick={() => switchRewriteMode("eli5")}>
+            explain like I&apos;m 5
           </button>
         </footer>
       </section>
@@ -324,12 +571,130 @@ export default function ConversationNewsApp() {
             <li key={story.id}>
               <strong>{story.title}</strong>
               <span>
-                {story.source} · {TOPIC_LABELS[story.topic]}
+                {story.source} · {TOPIC_LABELS[story.topic]} ·{" "}
+                {RELIABILITY_SHORT[RELIABILITY_LABELS[getSourceReliability(story.source).level]]}
               </span>
             </li>
           ))}
         </ul>
+
+        <section className="notification-panel">
+          <div className="notification-heading">
+            <h4>Push mock center</h4>
+            <span>{notificationsEnabled ? "On" : "Off"}</span>
+          </div>
+          <p>Prototype preview of push copy and timing. No real device notifications are sent.</p>
+          <div className="notification-actions">
+            <button type="button" className="chip" onClick={toggleNotifications}>
+              {notificationsEnabled ? "Pause mock push" : "Enable mock push"}
+            </button>
+            <button
+              type="button"
+              className="chip"
+              onClick={markNotificationsRead}
+              disabled={unreadNotifications === 0}
+            >
+              Mark all read
+            </button>
+          </div>
+
+          <ul className="notification-list">
+            {notifications.slice(0, 4).map((item) => (
+              <li key={item.id} className={item.read ? "read" : ""}>
+                <strong>{item.message}</strong>
+                <span>
+                  {TOPIC_LABELS[item.topic]} · {item.source}
+                </span>
+              </li>
+            ))}
+            {notifications.length === 0 && <li className="read">No notifications yet.</li>}
+          </ul>
+        </section>
       </aside>
+
+      {isHydrated && !onboardingComplete && (
+        <div className="onboarding-backdrop">
+          <form className="onboarding-card" onSubmit={submitOnboarding}>
+            <h3>Set up your briefing</h3>
+            <p>
+              Choose your topics, voice, and AI rewrite style. This is the first-run onboarding mock for
+              product demos.
+            </p>
+
+            <label className="onboarding-label" htmlFor="reader-name">
+              Name (optional)
+            </label>
+            <input
+              id="reader-name"
+              className="onboarding-input"
+              value={userName}
+              onChange={(event) => setUserName(event.target.value)}
+              placeholder="e.g. Sam"
+              autoComplete="name"
+            />
+
+            <p className="onboarding-hint">Topic preferences</p>
+            <div className="topic-grid">
+              {AVAILABLE_TOPICS.map((topic) => (
+                <button
+                  key={`onboarding-${topic}`}
+                  type="button"
+                  className={`chip ${topics.includes(topic) ? "chip-active" : ""}`}
+                  onClick={() => toggleTopic(topic)}
+                >
+                  {TOPIC_LABELS[topic]}
+                </button>
+              ))}
+            </div>
+
+            <p className="onboarding-hint">Tone and AI rewrite</p>
+            <div className="topic-grid">
+              {HUMOR_OPTIONS.map((option) => (
+                <button
+                  key={`onboarding-tone-${option.id}`}
+                  type="button"
+                  className={`chip ${humorMode === option.id ? "chip-active" : ""}`}
+                  onClick={() => switchHumorMode(option.id)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <div className="topic-grid tone-grid">
+              {REWRITE_OPTIONS.map((option) => (
+                <button
+                  key={`onboarding-rewrite-${option.id}`}
+                  type="button"
+                  className={`chip ${rewriteMode === option.id ? "chip-active" : ""}`}
+                  onClick={() => switchRewriteMode(option.id)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+
+            <label className="onboarding-checkbox">
+              <input
+                type="checkbox"
+                checked={notificationsEnabled}
+                onChange={toggleNotifications}
+              />
+              Enable mock push notifications
+            </label>
+
+            {onboardingError && <p className="error-line">{onboardingError}</p>}
+
+            <div className="onboarding-actions">
+              <button type="submit" className="cta">
+                Start briefing
+              </button>
+              <button type="button" className="cta cta-alt" onClick={useDemoProfile}>
+                Use demo profile
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </main>
   );
 }

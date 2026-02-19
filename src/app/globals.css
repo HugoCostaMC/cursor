@@ -104,6 +104,11 @@ body {
   line-height: 1.35;
 }
 
+.status-line {
+  padding-top: 0;
+  color: #2e5468;
+}
+
 .controls {
   padding: 0 1rem 0.6rem;
 }
@@ -115,6 +120,10 @@ body {
 }
 
 .tone-grid {
+  margin-top: 0.55rem;
+}
+
+.rewrite-grid {
   margin-top: 0.55rem;
 }
 
@@ -137,6 +146,23 @@ body {
   background: #1972ae;
   border-color: #1972ae;
   color: #fff;
+}
+
+.notification-toggle-row {
+  margin-top: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.notification-toggle {
+  font-size: 0.72rem;
+}
+
+.notification-count {
+  font-size: 0.72rem;
+  color: #4a5d68;
 }
 
 .conversation-window {
@@ -199,6 +225,12 @@ body {
   line-height: 1.4;
 }
 
+.rewrite-mode-label {
+  font-size: 0.74rem !important;
+  color: #1f658f !important;
+  font-weight: 600;
+}
+
 .story-image {
   width: 100%;
   border-radius: 12px;
@@ -224,6 +256,34 @@ body {
 .story-prompt {
   color: #555;
   font-style: italic;
+}
+
+.reliability-pill {
+  margin: 0;
+  justify-self: start;
+  border-radius: 999px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.68rem !important;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.reliability-high {
+  color: #0d5a2a !important;
+  background: #e6f6ea;
+  border-color: #b5e6c3;
+}
+
+.reliability-medium {
+  color: #7a5313 !important;
+  background: #fff4df;
+  border-color: #f1d8a4;
+}
+
+.reliability-reference {
+  color: #1f5574 !important;
+  background: #e5f1fb;
+  border-color: #b9d9ef;
 }
 
 .read-link {
@@ -264,6 +324,12 @@ body {
   background: #193243;
 }
 
+.cta:disabled,
+.chip:disabled {
+  opacity: 0.56;
+  cursor: not-allowed;
+}
+
 .queue-panel ul {
   margin: 0.7rem 0 0;
   padding: 0;
@@ -289,6 +355,148 @@ body {
 .queue-panel span {
   font-size: 0.72rem;
   color: #696969;
+}
+
+.notification-panel {
+  margin-top: 1rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.16);
+  padding-top: 0.8rem;
+}
+
+.notification-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.notification-heading h4 {
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.notification-heading span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #2d5873;
+}
+
+.notification-panel p {
+  margin: 0.45rem 0 0;
+  font-size: 0.73rem;
+  color: #55646f;
+  line-height: 1.35;
+}
+
+.notification-actions {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.notification-list {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.notification-list li {
+  display: grid;
+  gap: 0.18rem;
+  border: 1px solid rgba(14, 53, 83, 0.15);
+  background: #f2f7fb;
+  border-radius: 10px;
+  padding: 0.46rem 0.55rem;
+}
+
+.notification-list li.read {
+  background: #f6f6f6;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.notification-list strong {
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.notification-list span {
+  font-size: 0.67rem;
+  color: #5f6b74;
+}
+
+.onboarding-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 17, 21, 0.56);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 20;
+}
+
+.onboarding-card {
+  width: min(520px, 100%);
+  background: #fdfefe;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.32);
+  padding: 1rem 1.05rem;
+}
+
+.onboarding-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.onboarding-card p {
+  margin: 0.5rem 0 0;
+  color: #4f5c64;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.onboarding-label {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1d2b34;
+}
+
+.onboarding-input {
+  width: 100%;
+  margin-top: 0.33rem;
+  border: 1px solid #c6d2db;
+  border-radius: 10px;
+  padding: 0.52rem 0.64rem;
+  font-size: 0.84rem;
+}
+
+.onboarding-hint {
+  margin-top: 0.72rem !important;
+  margin-bottom: 0.38rem !important;
+  font-size: 0.74rem !important;
+  font-weight: 600;
+  color: #203543 !important;
+}
+
+.onboarding-checkbox {
+  margin-top: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  color: #304650;
+}
+
+.onboarding-actions {
+  margin-top: 0.86rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
 }
 
 @media (max-width: 1080px) {
