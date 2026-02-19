@@ -1,56 +1,51 @@
-# Cursor + Claude + GitHub Prototype Setup
+# Quartz Brief Conversational News Prototype
 
-This repository is configured for a fast prototype workflow using Cursor Agent with Claude and GitHub.
+Quartz-style conversational news briefing app with:
 
-## What this setup gives you
+- mobile-first chat layout inspired by Quartz app screenshots
+- live feed aggregation from multiple RSS news directories
+- personalized topic selection and saved preferences
+- adjustable comedy tone (`Straight`, `Wry`, `Chaotic`)
+- first-run onboarding flow with profile setup
+- AI-style summary rewrite modes (`Original`, `Concise AI`, `Deep Dive AI`, `ELI5 AI`)
+- source reliability indicators
+- push notification mock center (demo-only)
 
-- A clear agent workflow you can reuse per feature
-- A copy-paste prompt template for prototype tasks
-- A local setup checker script to validate GitHub + git basics
-- A safe default for handling secrets with `.env.local`
-
-## 1) Connect Cursor to Claude
-
-In Cursor desktop:
-
-1. Open **Settings -> Models**
-2. Enable a Claude model (for example, Claude Sonnet)
-3. Add your Anthropic API key **or** use your Cursor-provided model access
-
-> Note: API/model access is configured in your Cursor account/UI, not in git files.
-
-## 2) Connect this repo to GitHub (if needed)
-
-This repo already has a GitHub remote configured. If you are setting up from scratch:
+## Quick start
 
 ```bash
-gh auth login
-git clone <your-repo-url>
-cd <your-repo-folder>
+npm install
+npm run dev
 ```
 
-## 3) Open in Cursor and run a readiness check
+Open `http://localhost:3000`.
 
-```bash
-chmod +x scripts/check-agent-setup.sh
-./scripts/check-agent-setup.sh
-```
+## Product plan
 
-## 4) Start coding with Agent mode
+See `docs/PLAN.md` for the implementation plan and next-iteration roadmap.
 
-Use the prompt template in `AGENT_PROMPT_TEMPLATE.md`, then iterate in small chunks:
+## Architecture
 
-1. Ask for one feature at a time
-2. Let the agent implement and run checks
-3. Review diff before commit
-4. Commit frequently
+- **Frontend**: Next.js App Router + React client component
+- **Backend API**: `src/app/api/news/route.ts` (RSS aggregation/normalization)
+- **News directories**: `src/lib/news-directory.ts`
+- **Comedy/personalization logic**: `src/lib/comedy.ts`
+- **AI rewrite logic**: `src/lib/ai-rewrite.ts`
+- **Source reliability mapping**: `src/lib/source-reliability.ts`
 
-## 5) Keep secrets safe
+## API
 
-1. Copy `.env.example` to `.env.local`
-2. Add real keys only in `.env.local`
-3. Never commit real secrets
+`GET /api/news?topics=world,technology&limit=12`
 
-```bash
-cp .env.example .env.local
-```
+Response includes:
+
+- selected topic list
+- source directory list
+- normalized story cards (title, summary, source, URL, image if available)
+- fallback flag + feed failures
+
+## Notes
+
+- No API key required for this prototype.
+- If live RSS feeds fail temporarily, the API returns fallback stories so the UI still works.
+- Push notifications are mocked in-app for prototype demos and are not OS-level notifications.
