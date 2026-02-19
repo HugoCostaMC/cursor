@@ -126,35 +126,16 @@ const OnboardingFlow = () => {
 
   const monetizationPath = selectedGoal?.monetization ?? false;
 
-  const stepSequence = useMemo(
+  const stepSequence = useMemo<ChatStep[]>(
     () =>
       monetizationPath
-        ? ([
-            "welcome",
-            "goal",
-            "tone",
-            "offer",
-            "skill1",
-            "skill2",
-            "summary",
-            "trial",
-            "complete",
-          ] as const)
-        : ([
-            "welcome",
-            "goal",
-            "tone",
-            "skill1",
-            "skill2",
-            "summary",
-            "trial",
-            "complete",
-          ] as const),
+        ? ["welcome", "goal", "tone", "offer", "skill1", "skill2", "summary", "trial", "complete"]
+        : ["welcome", "goal", "tone", "skill1", "skill2", "summary", "trial", "complete"],
     [monetizationPath],
   );
 
   const progressKey = step === "skill1_edit" ? "skill1" : step;
-  const progressIndex = Math.max(stepSequence.indexOf(progressKey as (typeof stepSequence)[number]), 0);
+  const progressIndex = Math.max(stepSequence.indexOf(progressKey), 0);
   const progressValue = Math.round(((progressIndex + 1) / stepSequence.length) * 100);
 
   const needsTextInput = step === "offer" || step === "skill1_edit";
