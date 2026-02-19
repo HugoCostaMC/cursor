@@ -281,6 +281,7 @@ export default function ConversationNewsApp() {
               <p>{activeStory.summary}</p>
 
               {activeStory.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- RSS image hosts are dynamic in this prototype.
                 <img className="story-image" src={activeStory.imageUrl} alt={activeStory.title} />
               ) : (
                 <div className="story-image story-image-fallback">No image from source feed</div>
