@@ -7,8 +7,8 @@ This folder contains the mobile-first Manychat onboarding prototype app.
 From the repository root (recommended):
 
 ```bash
-npm run install:prototype
-npm run dev
+npm run install:onboarding
+npm run dev:onboarding
 ```
 
 Directly from this project folder:

@@ -86,14 +86,37 @@ This repository now includes a Vite + React + TypeScript **mobile-first** protot
 - Manychat-branded logo, typography, and color tokens
 - Accessibility-focused light mode and high text contrast
 
-Commands (from repo root):
+Project launcher commands (from repo root):
 
 ```bash
-npm run install:prototype
-npm run dev
+npm run install:all
+npm run dev:onboarding
 ```
 
-Optional direct project commands:
+Available project shortcuts:
+
+```bash
+# Onboarding project (default aliases: dev/build/check/preview)
+npm run install:onboarding
+npm run dev:onboarding
+npm run check:onboarding
+npm run build:onboarding
+
+# Starter sandbox project
+npm run install:starter
+npm run dev:starter
+npm run check:starter
+npm run build:starter
+```
+
+Combined checks/builds:
+
+```bash
+npm run check:all
+npm run build:all
+```
+
+Optional direct onboarding project commands:
 
 ```bash
 cd projects/ai-playground-onboarding
