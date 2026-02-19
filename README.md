@@ -86,7 +86,14 @@ This repository now includes a Vite + React + TypeScript **mobile-first** protot
 - Manychat-branded logo, typography, and color tokens
 - Accessibility-focused light mode and high text contrast
 
-Commands:
+Commands (from repo root):
+
+```bash
+npm run install:prototype
+npm run dev
+```
+
+Optional direct project commands:
 
 ```bash
 cd projects/ai-playground-onboarding
@@ -102,7 +109,6 @@ Prototype routes:
 Refresh tokens from your external system:
 
 ```bash
-cd projects/ai-playground-onboarding
 npm run sync:design-tokens
 ```
 

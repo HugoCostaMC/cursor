@@ -4,10 +4,16 @@ This folder contains the mobile-first Manychat onboarding prototype app.
 
 ## Run locally
 
-From the repository root:
+From the repository root (recommended):
 
 ```bash
-cd projects/ai-playground-onboarding
+npm run install:prototype
+npm run dev
+```
+
+Directly from this project folder:
+
+```bash
 npm install
 npm run dev
 ```

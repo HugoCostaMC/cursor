@@ -21,7 +21,7 @@ Set these values in `.env.local`:
 
 ```bash
 chmod +x scripts/connect-design-system.sh scripts/sync-design-tokens.sh
-./scripts/connect-design-system.sh
+npm run connect:design-system
 ```
 
 ### Behavior by mode
@@ -37,7 +37,7 @@ chmod +x scripts/connect-design-system.sh scripts/sync-design-tokens.sh
 ## 3) Refresh tokens anytime
 
 ```bash
-./scripts/sync-design-tokens.sh
+npm run sync:design-tokens
 ```
 
 Use this after design updates in the external system.
@@ -56,7 +56,6 @@ This repository is already wired:
 After syncing tokens, run:
 
 ```bash
-cd projects/ai-playground-onboarding
 npm run dev
 ```
 

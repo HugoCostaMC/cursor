@@ -1,0 +1,14 @@
+{
+  "name": "cursor-prototype-launcher",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "install:prototype": "npm --prefix projects/ai-playground-onboarding install",
+    "dev": "npm --prefix projects/ai-playground-onboarding run dev",
+    "build": "npm --prefix projects/ai-playground-onboarding run build",
+    "preview": "npm --prefix projects/ai-playground-onboarding run preview",
+    "check": "npm --prefix projects/ai-playground-onboarding run check",
+    "connect:design-system": "npm --prefix projects/ai-playground-onboarding run connect:design-system",
+    "sync:design-tokens": "npm --prefix projects/ai-playground-onboarding run sync:design-tokens"
+  }
+}

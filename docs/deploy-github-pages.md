@@ -34,6 +34,6 @@ For `HugoCostaMC/cursor`:
 ## Notes
 
 - Production uses `HashRouter` to prevent 404s on refresh/deep links in GitHub Pages.
-- Local development still uses `BrowserRouter` (`cd projects/ai-playground-onboarding && npm run dev`).
+- Local development still uses `BrowserRouter` (`npm run dev` from repo root).
 - If Actions fails with `Resource not accessible by integration`, enable Pages manually in repo
   settings with an admin account, then rerun the workflow.
