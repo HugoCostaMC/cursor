@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ -f ".env.local" ]; then
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+PROJECT_DIR="${DESIGN_SYSTEM_PROJECT_DIR:-${REPO_ROOT}/projects/ai-playground-onboarding}"
+
+if [ -f "${REPO_ROOT}/.env.local" ]; then
   set -a
   # shellcheck disable=SC1091
-  . ".env.local"
+  . "${REPO_ROOT}/.env.local"
+  set +a
+fi
+
+if [ -f "${PROJECT_DIR}/.env.local" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "${PROJECT_DIR}/.env.local"
   set +a
 fi
 
@@ -34,20 +45,22 @@ run_package_mode() {
       ;;
   esac
 
-  if [ ! -f "package.json" ]; then
-    printf "No package.json found in this repo yet.\n"
+  if [ ! -f "${PROJECT_DIR}/package.json" ]; then
+    printf "No package.json found at: %s\n" "${PROJECT_DIR}"
     printf "When your app is initialized, run:\n  %s\n" "${INSTALL_CMD[*]}"
     exit 0
   fi
 
-  printf "Installing external design system package...\n"
-  "${INSTALL_CMD[@]}"
+  printf "Installing external design system package in: %s\n" "${PROJECT_DIR}"
+  (
+    cd "${PROJECT_DIR}"
+    "${INSTALL_CMD[@]}"
+  )
   printf "Installed package: %s\n" "${PACKAGE_NAME}"
 }
 
 run_tokens_mode() {
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  "${SCRIPT_DIR}/sync-design-tokens.sh"
+  DESIGN_SYSTEM_PROJECT_DIR="${PROJECT_DIR}" "${SCRIPT_DIR}/sync-design-tokens.sh"
 }
 
 printf "Connecting design system (mode: %s)\n" "${MODE}"

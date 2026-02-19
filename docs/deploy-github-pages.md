@@ -3,7 +3,7 @@
 This repository is configured to deploy with GitHub Actions:
 
 - Workflow: `.github/workflows/deploy-pages.yml`
-- Build artifact: `dist/`
+- Build artifact: `projects/ai-playground-onboarding/dist/`
 - Pages base path: `/${repo-name}/` (set automatically in CI)
 
 ## 1) Enable Pages from Actions (one-time)
@@ -34,6 +34,6 @@ For `HugoCostaMC/cursor`:
 ## Notes
 
 - Production uses `HashRouter` to prevent 404s on refresh/deep links in GitHub Pages.
-- Local development still uses `BrowserRouter` (`npm run dev`).
+- Local development still uses `BrowserRouter` (`cd projects/ai-playground-onboarding && npm run dev`).
 - If Actions fails with `Resource not accessible by integration`, enable Pages manually in repo
   settings with an admin account, then rerun the workflow.

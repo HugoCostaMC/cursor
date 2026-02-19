@@ -7,9 +7,9 @@ content container).
 ## Location
 
 - Route: `/onboarding`
-- Main file: `src/features/onboarding/OnboardingFlow.tsx`
-- Mobile app shell: `src/App.tsx`
-- Design system components: `src/components/ui/*`
+- Main file: `projects/ai-playground-onboarding/src/features/onboarding/OnboardingFlow.tsx`
+- Mobile app shell: `projects/ai-playground-onboarding/src/App.tsx`
+- Design system components: `projects/ai-playground-onboarding/src/components/ui/*`
 
 ## Implemented chat flow
 

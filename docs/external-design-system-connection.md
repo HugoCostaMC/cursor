@@ -46,16 +46,17 @@ Use this after design updates in the external system.
 
 This repository is already wired:
 
-- Source tokens: `design-system/tokens.json`
-- External schema adapter: `src/theme/adapters/externalTokenAdapter.ts`
-- Mapping + merge/fallback logic: `src/theme/theme.ts`
-- Default fallback values: `src/theme/defaultTokens.ts`
-- Global CSS using theme: `src/theme/globalStyles.ts`
-- App entrypoint providers: `src/main.tsx`
+- Source tokens: `projects/ai-playground-onboarding/design-system/tokens.json`
+- External schema adapter: `projects/ai-playground-onboarding/src/theme/adapters/externalTokenAdapter.ts`
+- Mapping + merge/fallback logic: `projects/ai-playground-onboarding/src/theme/theme.ts`
+- Default fallback values: `projects/ai-playground-onboarding/src/theme/defaultTokens.ts`
+- Global CSS using theme: `projects/ai-playground-onboarding/src/theme/globalStyles.ts`
+- App entrypoint providers: `projects/ai-playground-onboarding/src/main.tsx`
 
 After syncing tokens, run:
 
 ```bash
+cd projects/ai-playground-onboarding
 npm run dev
 ```
 
@@ -75,7 +76,7 @@ The adapter currently maps these token domains:
 - `shadows`
 
 If a value is missing in your external source, fallback defaults are applied from
-`src/theme/defaultTokens.ts`.
+`projects/ai-playground-onboarding/src/theme/defaultTokens.ts`.
 
 ## 6) Supported external token shapes
 

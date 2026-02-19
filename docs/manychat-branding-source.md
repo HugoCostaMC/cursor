@@ -20,8 +20,8 @@ From status CSS (`03954e23d9f17683.css`):
 
 Applied in:
 
-- `src/theme/defaultTokens.ts`
-- `design-system/tokens.json`
+- `projects/ai-playground-onboarding/src/theme/defaultTokens.ts`
+- `projects/ai-playground-onboarding/design-system/tokens.json`
 
 ## Color sources
 
@@ -39,8 +39,8 @@ From status CSS utility class:
 
 Applied in:
 
-- `src/theme/defaultTokens.ts`
-- `design-system/tokens.json`
+- `projects/ai-playground-onboarding/src/theme/defaultTokens.ts`
+- `projects/ai-playground-onboarding/design-system/tokens.json`
 
 ## Logo sources
 
@@ -51,5 +51,5 @@ Extracted from `status.manychat.com` preload links:
 
 Stored locally in:
 
-- `src/assets/brand/manychat-logo.svg`
-- `src/assets/brand/manychat-logo.png`
+- `projects/ai-playground-onboarding/src/assets/brand/manychat-logo.svg`
+- `projects/ai-playground-onboarding/src/assets/brand/manychat-logo.png`

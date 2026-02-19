@@ -82,13 +82,14 @@ Full guide:
 This repository now includes a Vite + React + TypeScript **mobile-first** prototype app with:
 
 - Chat-first onboarding flow transformed from the provided mobile reference
-- **shadcn/ui** component system (`src/components/ui/*`)
+- **shadcn/ui** component system (`projects/ai-playground-onboarding/src/components/ui/*`)
 - Manychat-branded logo, typography, and color tokens
 - Accessibility-focused light mode and high text contrast
 
 Commands:
 
 ```bash
+cd projects/ai-playground-onboarding
 npm install
 npm run dev
 ```
@@ -101,6 +102,7 @@ Prototype routes:
 Refresh tokens from your external system:
 
 ```bash
+cd projects/ai-playground-onboarding
 npm run sync:design-tokens
 ```
 

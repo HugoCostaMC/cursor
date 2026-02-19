@@ -1,18 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ -f ".env.local" ]; then
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+PROJECT_DIR="${DESIGN_SYSTEM_PROJECT_DIR:-${REPO_ROOT}/projects/ai-playground-onboarding}"
+
+if [ -f "${REPO_ROOT}/.env.local" ]; then
   set -a
   # shellcheck disable=SC1091
-  . ".env.local"
+  . "${REPO_ROOT}/.env.local"
+  set +a
+fi
+
+if [ -f "${PROJECT_DIR}/.env.local" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "${PROJECT_DIR}/.env.local"
   set +a
 fi
 
 TOKENS_URL="${DESIGN_SYSTEM_TOKENS_URL:-}"
-OUTPUT_FILE="${DESIGN_SYSTEM_TOKEN_OUTPUT:-design-system/tokens.json}"
+OUTPUT_FILE="${DESIGN_SYSTEM_TOKEN_OUTPUT:-${PROJECT_DIR}/design-system/tokens.json}"
 AUTH_HEADER="${DESIGN_SYSTEM_AUTH_HEADER:-Authorization}"
 AUTH_SCHEME="${DESIGN_SYSTEM_AUTH_SCHEME:-Bearer}"
 API_TOKEN="${DESIGN_SYSTEM_API_TOKEN:-}"
+
+if [[ "${OUTPUT_FILE}" != /* ]]; then
+  OUTPUT_FILE="${REPO_ROOT}/${OUTPUT_FILE}"
+fi
 
 if [ -z "${TOKENS_URL}" ]; then
   printf "ERROR: DESIGN_SYSTEM_TOKENS_URL is required for tokens_api mode.\n"

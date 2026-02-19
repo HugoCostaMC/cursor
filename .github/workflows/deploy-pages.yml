@@ -20,6 +20,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/ai-playground-onboarding
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,6 +32,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: projects/ai-playground-onboarding/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -46,7 +50,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./projects/ai-playground-onboarding/dist
 
   deploy:
     needs: build
