@@ -1,7 +1,6 @@
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Check, RotateCcw, Send, Sparkles } from "lucide-react";
+import { Check, Send, Sparkles } from "lucide-react";
 import manychatLogo from "@/assets/brand/manychat-logo.png";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -98,7 +97,7 @@ const OnboardingFlow = () => {
   const [selectedToneId, setSelectedToneId] = useState<string | null>(null);
   const [offerText, setOfferText] = useState<string | null>(null);
   const [skillOneMessage, setSkillOneMessage] = useState<string | null>(null);
-  const [secondSkillEnabled, setSecondSkillEnabled] = useState<boolean | null>(null);
+  const [, setSecondSkillEnabled] = useState<boolean | null>(null);
   const [startedTrial, setStartedTrial] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const messageIdRef = useRef(3);
@@ -291,43 +290,14 @@ const OnboardingFlow = () => {
     }
   };
 
-  const secondaryMeta = useMemo(() => {
-    if (step !== "trial") {
-      return "Live setup";
-    }
-    if (startedTrial) {
-      return "Trial active";
-    }
-    return secondSkillEnabled === null ? "Awaiting choice" : "Ready";
-  }, [startedTrial, step, secondSkillEnabled]);
-
   return (
     <div className="flex min-h-[760px] flex-col overflow-hidden rounded-[1.8rem] bg-white">
       <header className="border-b border-slate-200 bg-white px-4 py-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <img src={manychatLogo} alt="Manychat" className="h-6 w-auto" />
-            <div>
-              <p className="text-sm font-semibold text-slate-900">Onboarding chat</p>
-              <p className="text-xs text-slate-600">{secondaryMeta}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-[#1F5ED8] text-white">Light mode</Badge>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 border-slate-300"
-              onClick={resetConversation}
-              aria-label="Restart onboarding"
-            >
-              <RotateCcw className="h-4 w-4 text-slate-700" />
-            </Button>
-          </div>
-        </div>
-        <Progress value={progressValue} className="mt-3 h-1.5 bg-slate-200" />
+        <img src={manychatLogo} alt="Manychat" className="h-6 w-auto" />
       </header>
+      <div className="border-b border-slate-100 bg-white px-4 py-2">
+        <Progress value={progressValue} className="h-1.5 bg-slate-200" />
+      </div>
 
       <div
         ref={scrollRef}
